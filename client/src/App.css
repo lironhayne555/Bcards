@@ -1,0 +1,13 @@
+.avatar-container {
+  display: flex;
+  justify-content: center;
+}
+.logo{
+font-weight: 600;
+font-size: larger;
+text-decoration: none;
+color:white;
+}
+.logo:hover {
+text-decoration: none;
+}
