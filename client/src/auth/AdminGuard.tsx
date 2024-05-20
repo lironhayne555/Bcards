@@ -1,17 +1,16 @@
 import { ReactNode, useContext } from "react";
 import { Navigate } from "react-router-dom";
-import { AppContext } from "../App";
+import { useAuth } from "../AppContext";
 
 interface Props {
     children: ReactNode
 }
 
 function AdminGuard({ children }: Props) {
-    const context = useContext(AppContext);
+    const {user} = useAuth();
 
     function isNotAdmin(): boolean {
-        
-        return !context?.admin || false;
+        return !(user?.isAdmin)
     }
 
     return isNotAdmin() ? (

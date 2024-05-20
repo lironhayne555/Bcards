@@ -76,12 +76,12 @@ const userSchema = new mongoose.Schema({
         type: Number,
         require: true,
         minlength: 1,
-        maxlength: 20,
+        maxlength: 1000,
     },
     zip: {
         type: Number,
         minlength: 5,
-        maxlength: 20,
+        maxlength: 50,
     },
     isAdmin: {
         type: Boolean,
@@ -91,7 +91,11 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
         required: true
-    }
+    },
+    favorites: [{
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'Card'
+    }],
 
 });
 

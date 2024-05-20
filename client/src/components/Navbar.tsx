@@ -16,7 +16,9 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { verifyToken } from '../auth/TokenManager';
 import Logout from '../auth/Logout';
-import { AppContext } from '../App';
+import { useAuth } from '../AppContext';
+import { SearchContext } from '../searchContext';
+import { log } from 'console';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -63,7 +65,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 function Navbar() {
-  const context = useContext(AppContext);
+  const {user} = useAuth();
 
 function showAbout() : boolean {
 if(!verifyToken() || verifyToken()) 
@@ -77,17 +79,24 @@ if(verifyToken())
 return false;
 }
 function showMyCards() : boolean {
-if(context?.admin || context?.business) 
+if(user?.isAdmin || user?.isBusiness) 
     return true;
 return false;
 }
 function showSandbox () : boolean {
-if(context?.admin) 
+if(user?.isAdmin) 
     return true;
 return false;
 }
 
   const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const [searchValue , setSearchValue] = useState('');
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(event.target.value);
+    console.log(searchValue);
+    
+  };
 
   const theme = useMemo(() => createTheme({
     palette: {
@@ -105,6 +114,8 @@ function handleClick() {
   const toggleMode = mode === 'dark' ? 'light' : 'dark';
   setMode(toggleMode);
 }
+
+
     return (     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
@@ -123,20 +134,20 @@ function handleClick() {
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
           >
-        <a href='cards'><span color="inherit" className='logo'>BCards</span></a>
+        <a href='/cards'><span color="inherit" className='logo'>BCards</span></a>
 {showAbout() &&
-            <Button href="about" color="inherit">ABOUT</Button>
+            <Button href="/about" color="inherit">ABOUT</Button>
 }
             { showFavCards() &&
 
- <Button href="favCards" color="inherit">FAV CARDS</Button>
+ <Button href="/favCards" color="inherit">FAV CARDS</Button>
 
 }
            { showMyCards() &&
-             <Button href="cards" color="inherit">MY CARDS</Button> 
+             <Button  href="/myCards" color="inherit">MY CARDS</Button> 
             }
              { showSandbox() && 
-              <Button href="sandbox" color="inherit">SANDBOX</Button>  
+              <Button href="/sandbox" color="inherit">SANDBOX</Button>  
             }
            
           </Typography>
@@ -148,6 +159,8 @@ function handleClick() {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              value={searchValue}
+              onChange={handleSearchChange}
             />
           </Search>
 
@@ -157,9 +170,9 @@ function handleClick() {
      <DynamicIcon></DynamicIcon>
      </IconButton>
     </ThemeProvider>
-          <Button color="inherit" href='signup'>SIGNUP</Button>
+          <Button color="inherit" href='/signup'>SIGNUP</Button>
           { !verifyToken() &&
-               <Button color="inherit" href="login">LOGIN</Button>
+               <Button color="inherit" href="/login">LOGIN</Button>
           }
           { verifyToken() && 
           <Logout></Logout>

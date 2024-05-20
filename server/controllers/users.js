@@ -16,7 +16,7 @@ module.exports = {
 
         if (error) {
             console.log(error.details[0].message);
-            res.status(401).send('Unauthorized');
+            res.status(401).send('Unauthorized').text(error.details[0].message);
             return;
         }
 
@@ -58,8 +58,8 @@ module.exports = {
             country: joi.string().min(2).max(256).required(),
             city: joi.string().min(2).max(256).required(),
             street: joi.string().min(2).max(256).required(),
-            houseNumber: joi.number().min(1).max(20).required(),
-            zip: joi.string().min(5).max(20).allow('', null).empty(''),
+            houseNumber: joi.number().min(1).max(1000).required(),
+            zip: joi.string().min(5).max(50).allow('', null).empty(''),
             isAdmin: joi.boolean().allow('', null).empty(''),
             isBusiness: joi.boolean().required(),
         });

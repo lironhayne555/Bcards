@@ -2,26 +2,26 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import PortraitIcon from '@mui/icons-material/Portrait';
 import InfoIcon from '@mui/icons-material/Info';
-import { BottomNavigationAction, Grid } from '@mui/material';
+import { BottomNavigationAction, Grid, Paper } from '@mui/material';
 import { useContext, useState } from 'react';
-import { AppContext } from '../App';
 import { verifyToken } from '../auth/TokenManager';
+import { useAuth } from '../AppContext';
+import { Link } from 'react-router-dom';
 
 function Footer() {
-const context = useContext(AppContext);
-console.log(context);
+const {user} = useAuth();
 function showFavorite() : boolean {
-if(verifyToken()) 
-    return true;
-return false;
-}
+    if(verifyToken()) 
+        return true;
+    return false;
+    }
 
 function showMyCards() : boolean {
 
-if(context?.business || context?.admin) 
-    return true;
-return false;
-}
+    if(user?.isBusiness || user?.isAdmin) 
+        return true;
+    return false;
+    }
 function showAbout() : boolean {
 
 if(!verifyToken() || verifyToken()) 
@@ -29,17 +29,19 @@ if(!verifyToken() || verifyToken())
 return false;
 }
 
-    return ( <><BottomNavigation showLabels>
+    return ( <>
+<Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+<BottomNavigation className='footer' showLabels>
                { showAbout() &&
-  <BottomNavigationAction label="About" icon={<InfoIcon/>}></BottomNavigationAction>
+  <BottomNavigationAction  component={Link} label="About" to="/about" icon={<InfoIcon/>}></BottomNavigationAction>
 }
                {  showFavorite() &&
-                <BottomNavigationAction label="Favorites" icon={<FavoriteIcon/>}></BottomNavigationAction>
-}
+              <BottomNavigationAction component={Link} to="/cards" label="Favorites" icon={ <FavoriteIcon/>}></BottomNavigationAction>
+            }
 { showMyCards() &&
- <BottomNavigationAction label="My Cards" icon={<PortraitIcon/>}></BottomNavigationAction>
+ <BottomNavigationAction label="My Cards" component={Link} to="/myCards" icon={<PortraitIcon/>}></BottomNavigationAction>
 }
-                </BottomNavigation></>);
+                </BottomNavigation></Paper></>);
 }
 
 export default Footer;

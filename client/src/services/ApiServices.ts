@@ -1,10 +1,13 @@
+import { error, log } from "console";
 import { User } from "../auth/SignUp";
-import { getToken } from "../auth/TokenManager";
-import { Card } from "../pages/cards/AddCard";
+import { getToken, getUser } from "../auth/TokenManager";
+import { Card } from "../components/RecipeReviewCard";
+import { json } from "stream/consumers";
+import { RssFeed } from "@mui/icons-material";
+import { toast } from "react-toastify";
 
 
-const serverUrl = 'http://localhost:3000/';
-const cardsUrl = `${serverUrl}cards`;
+const serverUrl = 'http://localhost:8080/';
 const usersUrl = `${serverUrl}users/`;
 
 export async function signup(user: User): Promise<User> {
@@ -15,7 +18,15 @@ export async function signup(user: User): Promise<User> {
         },
         body: JSON.stringify(user)
     });
+    if (! res.ok){
+        toast.error(" ");
+        return res.json();
+        }
+
+
     return res.json();
+    
+
 }
 
 
@@ -30,21 +41,3 @@ export async function signin(user: User): Promise<User> {
     return res.json();
 }
 
-
-export async function addCards(card: Card) :Promise<Card>{
-
-
-console.log(getToken());
-console.log(card);
-
- const res = await fetch(`${cardsUrl}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'x-auth-token': getToken()
-        },
-        body: JSON.stringify(card)
-    });
-    return res.json();
-
-}

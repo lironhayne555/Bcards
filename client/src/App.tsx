@@ -17,54 +17,29 @@ import SandBox from './pages/SandBox';
 import AddCard from './pages/cards/AddCard';
 import { getUser } from './auth/TokenManager';
 import { get } from 'http';
+import Cards from './pages/cards/Cards';
+import { ToastContainer } from 'react-toastify';
+import EditCard from './pages/cards/EditCard';
+import FavCards from './pages/cards/FavCards';
+import CardDetails from './pages/cards/CardDetails';
 
-interface Context {
-    business: boolean
-    setBusiness: Function
-    admin: boolean
-    setAdmin: Function,
-    user: any;
-    setUser: Function;
-
-} 
-
-export const AppContext = createContext<Context | null>(null);
-
-const userData = getUser();
 function App() {
 
-  const [business, setBusiness] = useState( userData ? userData.business : false
-  );
-  const [admin, setAdmin] = useState(userData ? userData.admin : false);
-  const [user, setUser] = useState();
 
-  useEffect(()=>{
-const theUser = getUser()
-if(theUser){
-setUser(theUser);
-}
-})
   return (<>
-<AppContext.Provider value={{
-                business,
-                setBusiness,
-                admin,
-                setAdmin,
-                user,
-                setUser,
-                
-            }}>
-    
     <Navbar></Navbar>
+ <ToastContainer position="bottom-left" theme="dark" />
     <Routes>
       <Route path="about" element={<About />} />
       <Route path="login" element={<Login />} />
       <Route path="signup" element={<SignUp />} />
+
+<Route path="myCards" element={<MyCard />} />
       <Route 
       path="cards" 
       element={
-      <MyCard />} />
-      <Route path="favCards" element={<MyCard />} />
+      <Cards />} />
+      <Route path="favCards" element={<FavCards />} />
 <Route path='sandbox' 
       element={
       <AdminGuard>
@@ -72,10 +47,9 @@ setUser(theUser);
       </AdminGuard>}>
       </Route>
  <Route path="addCard" element={<AddCard />} />
+<Route path="editCard/:_id" element={<EditCard/>}/>
+<Route path="cardDetails/:_id" element={<CardDetails/>}/>
     </Routes>
-
-      
-    </AppContext.Provider>
     <Footer></Footer>
 </>
     

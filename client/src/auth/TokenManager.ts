@@ -6,6 +6,7 @@ const userKey = "userData";
 export function setToken(tokenValue?: string) {
     if (!tokenValue) return;
     localStorage.setItem(tokenKey, tokenValue);
+
 }
 
 export function getToken(): string {
@@ -15,6 +16,7 @@ export function getToken(): string {
 export function removeToken() {
     localStorage.removeItem(tokenKey);
 }
+
 
 export function verifyToken(): boolean {
     return getToken().length > 0;
@@ -39,5 +41,5 @@ export function getUser() {
 export function removeUser() {
   localStorage.removeItem("userData");
   localStorage.removeItem(tokenKey);
-  window.location.reload()
+  //window.location.reload()
 }

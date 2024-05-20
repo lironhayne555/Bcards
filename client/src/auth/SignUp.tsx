@@ -55,7 +55,9 @@ export default function SignUp() {
     const [isBusiness, setIsBusiness] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const navigate = useNavigate();
-
+    const cancelFunction = () => {
+     navigate('/cards');
+    }
    const handleCheckChange =()=>{
     setIsBusiness(!isBusiness);
     }
@@ -80,7 +82,7 @@ export default function SignUp() {
               isAdmin,
               isBusiness
         })
-            .then((user) => {
+            .then((res) => {
                 navigate('/login')
             })
     }
@@ -98,7 +100,7 @@ export default function SignUp() {
               <Grid item container xs={12} spacing={2} >
               <Grid item xs={6}>
                 <TextField
-                  {...register('firstName',{ minLength:{value:2, message:"first name length must be at least 2 characters long"},
+                  {...register('firstName',{ minLength:{value:2, message:"first name length must be at least 2 characters long"}, maxLength:{value:256, message:"first name length must be maxium 256 characters long"},
                   required: "first name must be require"})}
                   required
                   autoComplete="given-name"
@@ -114,17 +116,20 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={6}>
                 <TextField
+                  {...register('middleName',{ minLength:{value:6, message:"middle name length must be at least 6 characters long"}, maxLength:{value:256, message:"middle name length must be maxium 256 characters long"}})}
                   fullWidth
                   id="middleName"
                   label="Middle Name"
                   name="middleName"
                   autoComplete="Middle Name"
                   onChange={(e)=> setMiddleName(e.target.value)}
+                  error={Boolean(errors.middleName)}
+                  helperText={errors.middleName?.message}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  {...register('lastName',{ minLength:{value:2, message:"last name length must be at least 2 characters long"},
+                  {...register('lastName',{ minLength:{value:2, message:"last name length must be at least 2 characters long"},maxLength:{value:256, message:"last name length must be maxium 256 characters long"},
                   required: "last name must be require"})}
                   required
                   fullWidth
@@ -139,7 +144,7 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  {...register('phone',{ pattern:{value:/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/, message:"phone must be a valid phone number"},
+                  {...register('phone',{ pattern:{value:/0[0-9]{1,2}\-?\s?[0-9]{3}\s?[0-9]{4}]/, message:"phone must be a valid phone number"},
                   required: "phone must be require"})}
                   required
                   fullWidth
@@ -154,7 +159,7 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  {...register('email',{ pattern:{value:/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, message:"user mail must be a valid mail"},
+                  {...register('email',{ pattern:{value:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, message:"user mail must be a valid mail"},
                   required: "email must be require"})}
                   required
                   fullWidth
@@ -170,7 +175,7 @@ export default function SignUp() {
               <Grid item xs={6}>
                 <TextField
 ///^(?=(.*?[0-9]){4})(?=.*[a-z])(?=.*[-\#\$\.\%\&\@\!\+\=\<\>\*])(?=.*[A-Z])[0-9a-zA-Z]{1}$/
-                  {...register('password',{ pattern:{value:/(?=(.*?[0-9]){4})/,
+                  {...register('password',{ pattern:{value:/((?=.*\d{1})(?=.*[A-Z]{1})(?=.*[a-z]{1})(?=.*[!@#$%^&*-]{1}).{7,20})/,
                   message: "user password must be at least 8 characters long and contain an upperCase letter, lowerCase, min 4 numbers and one of the following characters !@#$%^&*"},
                   required: "password must be require"})}
                   required
@@ -198,6 +203,7 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={6}>
                 <TextField
+                   {...register('imageAlt',{ minLength:{value:6, message:"Image alt length must be at least 6 characters long"},maxLength:{value:1024, message:"Image Alt length must be maxium 1024 long"}})}
                   fullWidth
                   name="imageAlt"
                   label="Image Alt"
@@ -205,21 +211,26 @@ export default function SignUp() {
                   id="imageAlt"
                   autoComplete="image-Alt"
                   onChange={(e)=> setimageAlt(e.target.value)}
+                  error={Boolean(errors.imageAlt)}
+                  helperText={errors.imageAlt?.message}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
                   fullWidth
+                  {...register('state',{ minLength:{value:2, message:"state length must be at least 2 characters long"},maxLength:{value:256, message:"state length must be maxium 256 long"}})}
                   id="state"
                   label="State"
                   name="state"
                   autoComplete="state"
                   onChange={(e)=> setState(e.target.value)}
+                   error={Boolean(errors.state)}
+                  helperText={errors.state?.message}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  {...register('country',{ minLength:{value:2, message:"country length must be at least 2 characters long"},
+                  {...register('country',{ minLength:{value:2, message:"country length must be at least 2 characters long"},maxLength:{value:256, message:"country length must be maxium 256 long"},
                   required: "country must be require"})}
                   required
                   fullWidth
@@ -236,7 +247,7 @@ export default function SignUp() {
                
               <Grid item xs={6}>
                 <TextField
-                  {...register('street',{ minLength:{value:2, message:"street length must be at least 2 characters long"},
+                  {...register('street',{ minLength:{value:2, message:"street length must be at least 2 characters long"},maxLength:{value:256, message:"street length must be maxium 256 long"},
                   required: "street must be require"})}
                   fullWidth
                   required
@@ -252,7 +263,7 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  {...register('city',{ minLength:{value:2, message:"city length must be at least 2 characters long"},
+                  {...register('city',{ minLength:{value:2, message:"city length must be at least 2 characters long"},maxLength:{value:256, message:"city length must be maxium 256 long"},
                   required: "city must be require"})}
                   required
                   fullWidth
@@ -283,6 +294,7 @@ export default function SignUp() {
              
               <Grid item xs={6}>
                 <TextField
+                   {...register('zip',{ minLength:{value:5, message:"city length must be at least 5 characters long"},maxLength:{value:50, message:"zip length must be maxium 50 long"}})}
                   fullWidth
                   name="zip"
                   label="Zip"
@@ -290,6 +302,8 @@ export default function SignUp() {
                   id="zip"
                   autoComplete="zip"
                   onChange={(e)=> setZip(e.target.value)}
+                  error={Boolean(errors.zip)}
+                  helperText={errors.zip?.message}
                 />
               </Grid>
               <Grid item xs={12} sm={12}>
@@ -301,25 +315,17 @@ export default function SignUp() {
                 />
 
             </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                   <Button
                      fullWidth
-                     type="submit"
                      variant="outlined"
                     color="error"
+                    onClick={()=>cancelFunction()}
                      >
                      CANCEL
                     </Button>
               </Grid>
-              <Grid item xs={6}>
-                  <Button
-                    fullWidth
-                     type="submit"
-                     variant="outlined"
-                     >
-                     <AutorenewIcon></AutorenewIcon>
-                    </Button>
-              </Grid>
+              
               <Grid item xs={12}>
                   <Button
                     fullWidth

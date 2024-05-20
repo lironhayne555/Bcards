@@ -4,15 +4,25 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter, BrowserRouter as Router} from 'react-router-dom';
+import { AppContextProvider } from './AppContext';
+import { CardContextProvider } from './CardContext'
+import "react-toastify/dist/ReactToastify.min.css";import { SearchContext, SearchProvider } from './searchContext';
+;
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 root.render(
   <React.StrictMode>
-<BrowserRouter>
-    <App />
-</BrowserRouter>
+  <BrowserRouter>
+  <AppContextProvider>
+<CardContextProvider>
+<SearchProvider>
+      <App />
+</SearchProvider>
+</CardContextProvider>
+  </AppContextProvider>
+  </BrowserRouter>
   </React.StrictMode>
 );
 

@@ -1,4 +1,3 @@
-import { AppContext } from '../App';
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -17,9 +16,10 @@ import { User } from './SignUp';
 import { useContext, useState } from 'react';
 import FormLayout from '../components/FormLayout';
 import { useNavigate } from 'react-router-dom';
-import { setToken, setUser } from './TokenManager';
+import * as tokenManager from './TokenManager';
 import { signin } from '../services/ApiServices';
 import { log } from 'console';
+import { useAuth } from '../AppContext';
 
     
 
@@ -32,46 +32,27 @@ export default function SignIn() {
   const { register, handleSubmit, formState: { errors }, formState } = useForm<User>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const context = useContext(AppContext);
+  const {user,setUser} = useAuth();
   const onSubmit: SubmitHandler<User> = (data) => login(data);
   const navigate = useNavigate();
-
+  const cancelFunction = () => {
+     navigate('/cards');
+    }
   function login(data:User) {
   signin({
         email,
         password
         })
         .then((user: User)=>{
-                setUser(user);
-                setToken(user.token);
-                // localStorage.setItem("admin", JSON.stringify(user.isAdmin))
-                // localStorage.setItem("business", JSON.stringify(user.isBusiness))
-                //     context && context.setAdmin() ?  context.setAdmin(user.isAdmin ) : console.log("not working");
-                //     context && context.setBusiness() ? context.setBusiness(user.isBusiness) : console.log("not working");
-                //    context && context.setUser() ?  context.setUser(user._id) : console.log("not working");
-                   if(user)
-{
-              context?.setUser(user);
-}
-                    
+                setUser(user)
+                tokenManager.setUser(user);
+                tokenManager.setToken(user.token);
                 navigate('/cards');
-
             })
-console.log(context);
+
   }
 
   return (
-    // <ThemeProvider theme={defaultTheme}>
-    //   <Container component="main" maxWidth="xs">
-    //     <CssBaseline />
-    //     <Box
-    //       sx={{
-    //         marginTop: 8,
-    //         display: 'flex',
-    //         flexDirection: 'column',
-    //         alignItems: 'center',
-    //       }}
-    //     >
            <FormLayout>  <form onSubmit={handleSubmit(onSubmit)} noValidate>
               <div className="avatar-container">
           <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
@@ -85,7 +66,7 @@ console.log(context);
             <Grid item container spacing={2}>
               <Grid item xs={12}>
             <TextField
-              {...register('email',{ pattern:{value:/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, message:"user mail must be a valid mail"},
+              {...register('email',{ pattern:{value:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, message:"user mail must be a valid mail"},
               required: "email must be require"})}
               required
               fullWidth
@@ -101,7 +82,7 @@ console.log(context);
             </Grid>
             <Grid item xs={12}>
             <TextField
-              {...register('password',{ pattern:{value:/(?=(.*?[0-9]){4})/,
+              {...register('password',{ pattern:{value:/((?=.*\d{1})(?=.*[A-Z]{1})(?=.*[a-z]{1})(?=.*[!@#$%^&*-]{1}).{7,20})/,
               message: "user password must be at least 8 characters long and contain an upperCase letter, lowerCase, min 4 numbers and one of the following characters !@#$%^&*"},
               required: "password must be require"})}
               required
@@ -116,23 +97,14 @@ console.log(context);
               helperText={errors.password?.message}
             />
            </Grid>
-              <Grid item xs={6}>
-                  <Button
-                     fullWidth
-                     type="submit"
-                     variant="outlined"
-                    color="error"
-                     >
-                     CANCEL
-                    </Button>
-              </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                   <Button
                     fullWidth
-                     type="submit"
-                     variant="outlined"
+                    variant="outlined"
+                    color="error"
+                    onClick={() => cancelFunction()}
                      >
-                     <AutorenewIcon></AutorenewIcon>
+                     CANCEL
                     </Button>
               </Grid>
               <Grid item xs={12}>

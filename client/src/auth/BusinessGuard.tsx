@@ -1,22 +1,20 @@
 import { ReactNode, useContext } from "react";
 import { Navigate } from "react-router-dom";
-import { AppContext } from "../App";
+import { useAuth } from "../AppContext";
 
 interface Props {
     children: ReactNode
 }
 
 function BusinessGuard({ children }: Props) {
-    const context = useContext(AppContext);
-
+    const {user} = useAuth();
     function isBusiness(): boolean {
-        
-        return !context?.business || false;
+        return !(user?.isBusiness)
     }
 
     return isBusiness() ? (
         <Navigate
-            to="/"
+            to="/login"
             replace={true}
         />
     ) : (
