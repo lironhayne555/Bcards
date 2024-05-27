@@ -19,7 +19,7 @@ import Logout from '../auth/Logout';
 import { useAuth } from '../AppContext';
 import { SearchContext } from '../searchContext';
 import { log } from 'console';
-
+import { Link } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -65,8 +65,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 function Navbar() {
-  const {user} = useAuth();
-
+const {user} = useAuth();
 function showAbout() : boolean {
 if(!verifyToken() || verifyToken()) 
     return true;
@@ -79,18 +78,18 @@ if(verifyToken())
 return false;
 }
 function showMyCards() : boolean {
-if(user?.isAdmin || user?.isBusiness) 
+if((user?.isAdmin || user?.isBusiness) && verifyToken()) 
     return true;
 return false;
 }
-function showSandbox () : boolean {
-if(user?.isAdmin) 
+function showAdminPannel() : boolean {
+if((user?.isAdmin)  && verifyToken()) 
     return true;
 return false;
 }
 
   const [mode, setMode] = useState<'light' | 'dark'>('light');
-  const [searchValue , setSearchValue] = useState('');
+  const { searchValue, setSearchValue } = React.useContext(SearchContext);
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
@@ -134,20 +133,26 @@ function handleClick() {
             component="div"
             sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
           >
-        <a href='/cards'><span color="inherit" className='logo'>BCards</span></a>
+        <Link to='/cards'><span color="inherit" className='logo'>BCards</span></Link>
 {showAbout() &&
-            <Button href="/about" color="inherit">ABOUT</Button>
+            <Link to="/about" style={{ textDecoration: 'none' ,color:"white"}}>
+            <Button  color="inherit">ABOUT</Button>
+            </Link>
 }
             { showFavCards() &&
-
- <Button href="/favCards" color="inherit">FAV CARDS</Button>
-
+<Link to="/favCards" style={{ textDecoration: 'none' ,color:"white"}}>
+ <Button  color="inherit">FAV CARDS</Button>
+</Link>
 }
            { showMyCards() &&
-             <Button  href="/myCards" color="inherit">MY CARDS</Button> 
+            <Link to="/myCards" style={{ textDecoration: 'none' ,color:"white"}}>
+             <Button color="inherit">MY CARDS</Button> 
+            </Link>
             }
-             { showSandbox() && 
-              <Button href="/sandbox" color="inherit">SANDBOX</Button>  
+             { showAdminPannel() && 
+               <Link to="/adminPanel" style={{ textDecoration: 'none' ,color:"white"}}>
+              <Button color="inherit">ADMIN PANEL</Button>  
+              </Link>
             }
            
           </Typography>
@@ -160,7 +165,7 @@ function handleClick() {
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
               value={searchValue}
-              onChange={handleSearchChange}
+              onInput={handleSearchChange}
             />
           </Search>
 
@@ -170,9 +175,13 @@ function handleClick() {
      <DynamicIcon></DynamicIcon>
      </IconButton>
     </ThemeProvider>
-          <Button color="inherit" href='/signup'>SIGNUP</Button>
+          <Link to="/signup" style={{ textDecoration: 'none' ,color:"white"}}>
+          <Button color="inherit">SIGNUP</Button>
+          </Link>
           { !verifyToken() &&
-               <Button color="inherit" href="/login">LOGIN</Button>
+                <Link to="/login" style={{ textDecoration: 'none' ,color:"white"}}>
+               <Button color="inherit">LOGIN</Button>
+                </Link>
           }
           { verifyToken() && 
           <Logout></Logout>
