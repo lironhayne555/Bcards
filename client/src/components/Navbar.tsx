@@ -1,109 +1,84 @@
-import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
-import Button from '@mui/material/Button';
-import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { ReactElement, useMemo, useState } from 'react';
-import { verifyToken } from '../auth/TokenManager';
-import Logout from '../auth/Logout';
-import { useAuth } from '../AppContext';
-import { SearchContext } from '../searchContext';
-<<<<<<< HEAD
-import { Link } from 'react-router-dom';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import useMediaQuery from '@mui/material/useMediaQuery';
-=======
-import { log } from 'console';
-import { Link } from 'react-router-dom';
->>>>>>> 4fb8e15366d33a6c4d04e1b86f5b3ba0d5eaa298
+import * as React from "react";
+import { styled, alpha } from "@mui/material/styles";
+import AppBar from "@mui/material/AppBar";
+import Box from "@mui/material/Box";
+import Toolbar from "@mui/material/Toolbar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import InputBase from "@mui/material/InputBase";
+import MenuIcon from "@mui/icons-material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import Button from "@mui/material/Button";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { useMemo, useState } from "react";
+import { verifyToken } from "../auth/TokenManager";
+import Logout from "../auth/Logout";
+import { useAuth } from "../AppContext";
+import { SearchContext } from "../searchContext";
+import { Link } from "react-router-dom";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { CssBaseline, Menu, MenuItem } from "@mui/material";
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
+const Search = styled("div")(({ theme }) => ({
+  position: "relative",
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
+  "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.25),
   },
   marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
+  width: "100%",
+  [theme.breakpoints.up("sm")]: {
     marginLeft: theme.spacing(1),
-    width: 'auto',
+    width: "auto",
   },
 }));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
+const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  height: "100%",
+  position: "absolute",
+  pointerEvents: "none",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
+  color: "inherit",
+  "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: '12ch',
-      '&:focus': {
-        width: '20ch',
+    transition: theme.transitions.create("width"),
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "12ch",
+      "&:focus": {
+        width: "20ch",
       },
     },
   },
 }));
 
 function Navbar() {
-<<<<<<< HEAD
   const { user } = useAuth();
   const { searchValue, setSearchValue } = React.useContext(SearchContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
-  
+  const [mode, setMode] = useState<"light" | "dark">("light");
+
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-=======
-const {user} = useAuth();
-function showAbout() : boolean {
-if(!verifyToken() || verifyToken()) 
-    return true;
-return false;
-}
 
-function showFavCards() : boolean {
-if(verifyToken()) 
-    return true;
-return false;
-}
-function showMyCards() : boolean {
-if((user?.isAdmin || user?.isBusiness) && verifyToken()) 
-    return true;
-return false;
-}
-function showAdminPannel() : boolean {
-if((user?.isAdmin)  && verifyToken()) 
-    return true;
-return false;
-}
+  function showAbout(): boolean {
+    return verifyToken() !== null;
+  }
 
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
-  const { searchValue, setSearchValue } = React.useContext(SearchContext);
->>>>>>> 4fb8e15366d33a6c4d04e1b86f5b3ba0d5eaa298
+  function showFavCards(): boolean {
+    return verifyToken() !== null;
+  }
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -113,27 +88,22 @@ return false;
     setSearchValue(event.target.value);
   };
 
-  const theme = useMemo(() => createTheme({
-    palette: {
-      mode,
-    },
-  }), [mode]);
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+        },
+      }),
+    [mode]
+  );
 
   function handleClick() {
-    const toggleMode = mode === 'dark' ? 'light' : 'dark';
+    const toggleMode = mode === "dark" ? "light" : "dark";
     setMode(toggleMode);
   }
 
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-  function showAbout() {
-    return true;
-  }
-
-<<<<<<< HEAD
-  function showFavCards() {
-    return verifyToken();
-  }
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   function showMyCards() {
     return (user?.isAdmin || user?.isBusiness) && verifyToken();
@@ -142,61 +112,6 @@ return false;
   function showAdminPannel() {
     return user?.isAdmin && verifyToken();
   }
-=======
-    return (     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-          >
-        <Link to='/cards'><span color="inherit" className='logo'>BCards</span></Link>
-{showAbout() &&
-            <Link to="/about" style={{ textDecoration: 'none' ,color:"white"}}>
-            <Button  color="inherit">ABOUT</Button>
-            </Link>
-}
-            { showFavCards() &&
-<Link to="/favCards" style={{ textDecoration: 'none' ,color:"white"}}>
- <Button  color="inherit">FAV CARDS</Button>
-</Link>
-}
-           { showMyCards() &&
-            <Link to="/myCards" style={{ textDecoration: 'none' ,color:"white"}}>
-             <Button color="inherit">MY CARDS</Button> 
-            </Link>
-            }
-             { showAdminPannel() && 
-               <Link to="/adminPanel" style={{ textDecoration: 'none' ,color:"white"}}>
-              <Button color="inherit">ADMIN PANEL</Button>  
-              </Link>
-            }
-           
-          </Typography>
-          
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-              value={searchValue}
-              onInput={handleSearchChange}
-            />
-          </Search>
->>>>>>> 4fb8e15366d33a6c4d04e1b86f5b3ba0d5eaa298
 
   return (
     <ThemeProvider theme={theme}>
@@ -204,67 +119,89 @@ return false;
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static">
           <Toolbar>
-            {isSmallScreen ? (
-              <IconButton
-                size="large"
-                edge="start"
-                color="inherit"
-                aria-label="open drawer"
-                sx={{ mr: 2 }}
-                onClick={handleMenuOpen}
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              sx={{ mr: 2 }}
+              onClick={handleMenuOpen}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              variant="h6"
+              noWrap
+              component="div"
+              sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            >
+              <Link
+                to="/cards"
+                style={{ textDecoration: "none", color: "inherit" }}
               >
-                <MenuIcon />
-              </IconButton>
-            ) : (
+                BCards
+              </Link>
+            </Typography>
+            {!isSmallScreen && (
               <>
-                <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-                  <Link to='/cards' style={{ textDecoration: 'none', color: 'inherit' }}>BCards</Link>
-                </Typography>
                 {showAbout() && (
-                  <Link to="/about" style={{ textDecoration: 'none', color: 'white' }}>
+                  <Link
+                    to="/about"
+                    style={{ textDecoration: "none", color: "white" }}
+                  >
                     <Button color="inherit">ABOUT</Button>
                   </Link>
                 )}
                 {showFavCards() && (
-                  <Link to="/favCards" style={{ textDecoration: 'none', color: 'white' }}>
+                  <Link
+                    to="/favCards"
+                    style={{ textDecoration: "none", color: "white" }}
+                  >
                     <Button color="inherit">FAV CARDS</Button>
                   </Link>
                 )}
                 {showMyCards() && (
-                  <Link to="/myCards" style={{ textDecoration: 'none', color: 'white' }}>
+                  <Link
+                    to="/myCards"
+                    style={{ textDecoration: "none", color: "white" }}
+                  >
                     <Button color="inherit">MY CARDS</Button>
                   </Link>
                 )}
                 {showAdminPannel() && (
-                  <Link to="/adminPanel" style={{ textDecoration: 'none', color: 'white' }}>
+                  <Link
+                    to="/adminPanel"
+                    style={{ textDecoration: "none", color: "white" }}
+                  >
                     <Button color="inherit">ADMIN PANEL</Button>
                   </Link>
                 )}
-                <Search>
-                  <SearchIconWrapper>
-                    <SearchIcon />
-                  </SearchIconWrapper>
-                  <StyledInputBase
-                    placeholder="Search…"
-                    inputProps={{ 'aria-label': 'search' }}
-                    value={searchValue}
-                    onChange={handleSearchChange}
-                  />
-                </Search>
-
-                
               </>
             )}
-
-                <Link to="/signup" style={{ textDecoration: 'none', color: 'white' }}>
-                  <Button color="inherit">SIGNUP</Button>
-                </Link>
-                {!verifyToken() &&(
-                  <Link to="/login" style={{ textDecoration: 'none', color: 'white' }}>
-                    <Button color="inherit">LOGIN</Button>
-                  </Link>
-                )}
-                {verifyToken() && <Logout />}
+            <Search>
+              <SearchIconWrapper>
+                <SearchIcon />
+              </SearchIconWrapper>
+              <StyledInputBase
+                placeholder="Search…"
+                inputProps={{ "aria-label": "search" }}
+                value={searchValue}
+                onChange={handleSearchChange}
+              />
+            </Search>
+            <IconButton color="inherit" onClick={handleClick}>
+              {mode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+            </IconButton>
+            {!verifyToken() ? (
+              <Link
+                to="/login"
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                <Button color="inherit">LOGIN</Button>
+              </Link>
+            ) : (
+              <Logout />
+            )}
           </Toolbar>
         </AppBar>
         <Menu
@@ -272,58 +209,58 @@ return false;
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
         >
-          <MenuItem onClick={handleMenuClose}>
-            <Link to='/cards' style={{ textDecoration: 'none', color: 'inherit' }}>BCards</Link>
-          </MenuItem>
           {showAbout() && (
             <MenuItem onClick={handleMenuClose}>
-              <Link to="/about" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link
+                to="/about"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
                 ABOUT
               </Link>
             </MenuItem>
           )}
           {showFavCards() && (
             <MenuItem onClick={handleMenuClose}>
-              <Link to="/favCards" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link
+                to="/favCards"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
                 FAV CARDS
               </Link>
             </MenuItem>
           )}
           {showMyCards() && (
             <MenuItem onClick={handleMenuClose}>
-              <Link to="/myCards" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link
+                to="/myCards"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
                 MY CARDS
               </Link>
             </MenuItem>
           )}
           {showAdminPannel() && (
             <MenuItem onClick={handleMenuClose}>
-              <Link to="/adminPanel" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link
+                to="/adminPanel"
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
                 ADMIN PANEL
               </Link>
             </MenuItem>
           )}
+          <MenuItem onClick={handleMenuClose}>
+            <Link
+              to="/signup"
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              SIGNUP
+            </Link>
+          </MenuItem>
         </Menu>
       </Box>
     </ThemeProvider>
-<<<<<<< HEAD
   );
-=======
-          <Link to="/signup" style={{ textDecoration: 'none' ,color:"white"}}>
-          <Button color="inherit">SIGNUP</Button>
-          </Link>
-          { !verifyToken() &&
-                <Link to="/login" style={{ textDecoration: 'none' ,color:"white"}}>
-               <Button color="inherit">LOGIN</Button>
-                </Link>
-          }
-          { verifyToken() && 
-          <Logout></Logout>
-          }   
-        </Toolbar>
-      </AppBar>
-    </Box>);
->>>>>>> 4fb8e15366d33a6c4d04e1b86f5b3ba0d5eaa298
 }
 
 export default Navbar;

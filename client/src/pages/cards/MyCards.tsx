@@ -48,8 +48,8 @@ function MyCard() {
         const cards = await getMyCards(user._id || "");
         cardsRef.current = cards;
         //forceUpdate()   ;
-        console.log(cardsRef.current);
       }
+      console.log(cardsRef.current);
     } catch (error) {
       console.error("Error fetching cards:", error);
     }
@@ -77,14 +77,6 @@ function MyCard() {
   function onUpdate(_id: string) {
     navigate(`/editCard/${_id}`);
   }
-
-  // const myCardsMemo = useCallback( async ()=> {
-  //   if (user) {
-  //                 const cards = await getMyCards(user._id ? user._id : '');
-  //                 setMyCards(cards);
-  //             }
-
-  // },[user])
   useEffect(() => {
     fetchCards();
   }, [cardsRef.current]);

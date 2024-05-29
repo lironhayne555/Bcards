@@ -24,7 +24,6 @@ function FavCards() {
   const [favsCards, setFavsCards] = useState<Array<Card>>([]);
   const cardsRef = useRef(favsCards);
 
-
   useEffect(() => {
     if (searchValue.trim() !== "") {
       {
@@ -37,7 +36,7 @@ function FavCards() {
       }
     }
   }, [searchValue, cardsRef.current]);
-  
+
   return (
     <>
       <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
@@ -55,9 +54,7 @@ function FavCards() {
               <div className="card-wrapper" key={cardItem._id}>
                 <RecipeReviewCard
                   {...cardItem}
-                  handleSetFavs={() =>
-                    setFavCardFunctionClick(cardItem._id ? cardItem._id : "")
-                  }
+                  handleSetFavs={() => (cardItem._id ? cardItem._id : "")}
                 />
               </div>
             ))}
