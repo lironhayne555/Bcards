@@ -19,7 +19,10 @@ import { setFavorites } from "../services/CardServices";
 import { User } from "../auth/SignUp";
 import { toast } from "react-toastify";
 import { useForceUpdate } from "./useForceUpdate";
-
+export interface AddCardForm extends Card {
+  userId: string;
+  imageFile?: any;
+}
 export interface Card {
   _id?: string;
   title: string;

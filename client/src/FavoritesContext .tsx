@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useForceUpdate } from "./components/useForceUpdate";
 import { useAuth } from "./AppContext";
 import { toast } from "react-toastify";
@@ -12,33 +19,35 @@ interface FavoritesContextType {
 }
 
 const FavoritesContext = createContext<FavoritesContextType | null>(null);
-const FavoritesProvider: React.FC = ({ children }) => {
+const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [favorites, setFavoritesState] = useState<Array<Card>>([]);
   const cardsRef = useRef<Array<Card>>([]);
   const forceUpdate = useForceUpdate();
   const { user } = useAuth();
   useEffect(() => {
-    if (user) {
-      getFavorites(user.id).then((json) => {
-        setFavoritesState(json);
-        cardsRef.current = json;
-      }).catch(error => {
-        toast.error("Failed to fetch favorites");
-      });
+    if (user?._id) {
+      getFavorites(user._id)
+        .then((json) => {
+          setFavoritesState(json);
+          cardsRef.current = json;
+        })
+        .catch((error) => {
+          toast.error("Failed to fetch favorites");
+        });
     }
   }, [user]);
 
   const handleAddFavs = (cardId: string) => {
-    const updatedFavorites = [...favorites, { id: cardId } as Card]; // Mocking a new card addition
+    const updatedFavorites = [...favorites, { _id: cardId } as Card]; // Mocking a new card addition
     cardsRef.current = updatedFavorites;
+    if (user?._id)
+      // setFavorites(user._id, updatedFavorites).then(() => {
+      //   toast.success("Favorite added successfully");
+      // }).catch(error => {
+      //   toast.error("Failed to add favorite");
+      // });
 
-    setFavorites(user.id, updatedFavorites).then(() => {
-      toast.success("Favorite added successfully");
-    }).catch(error => {
-      toast.error("Failed to add favorite");
-    });
-
-    forceUpdate();
+      forceUpdate();
   };
   return (
     <FavoritesContext.Provider value={{ favorites, handleAddFavs, cardsRef }}>

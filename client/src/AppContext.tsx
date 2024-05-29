@@ -32,6 +32,7 @@ export const AppContextProvider = ({
 
   useEffect(() => {
     const theUser = getUser();
+
     if (theUser) {
       setUser(theUser);
     }
