@@ -11,37 +11,40 @@ export async function addCards(cardForm: FormData) :Promise<Card>{
  const res = await fetch(`${cardsUrl}`, {
         method: 'POST',
         headers: {
+           // 'Content-Type': 'multipart/form-data',
             'x-auth-token': getToken()
         },
         body: cardForm
     })
 if (! res.ok){
-toast.error(res.statusText);
+toast.error("error add card");
 return res.json();
 }
-console.log(res)
 return res.json();
-
 }
 
-export async function editCards(cardForm: FormData) :Promise<Card>{
- const res = await fetch(`${cardsUrl}`, {
+export async function editCards(_id:any,cardForm: FormData) :Promise<Card>{
+ const res = await fetch(`${cardsUrl}${_id}`, {
         method: 'PATCH',
         headers: {
+            //'Content-Type': 'multipart/form-data',
             'x-auth-token': getToken()
         },
         body: cardForm
     });
-    return res.json();
-
+   if (! res.ok){
+toast.error("error edit card");
+return res.json();
+}
+return res.json();
 }
 export async function getCards(): Promise<Array<Card>> {
     const res = await fetch(`${cardsUrl}`);
     return res.json();
 }
 
-export async function getCardsByUser(userId: string): Promise<Card> {
-    const res = await fetch(`${cardsUrl}user/${userId}`, {
+export async function getCardsByUser(_id:string): Promise<Card> {
+    const res = await fetch(`${cardsUrl}user/${_id}`, {
         method: 'GET',
         headers: {
             'x-auth-token': getToken()
@@ -56,8 +59,11 @@ export async function deleteCard(_id: string): Promise<Card>{
             'x-auth-token': getToken()
         },
     })
-    return res.json()
-
+      if (! res.ok){
+toast.error("error delete card");
+return res.json();
+}
+return res.json();
 }
 
 export async function getCardById(_id: string): Promise<Card> {
@@ -70,8 +76,8 @@ export async function getCardById(_id: string): Promise<Card> {
     return res.json();
 }
 
-export async function getFavorites(user: string): Promise<any> {
-  const res = await fetch(`${cardsUrl}${user}/favs`, {
+export async function getFavorites(_id: string): Promise<Array<Card>> {
+  const res = await fetch(`${cardsUrl}${_id}/favs`, {
     method: 'GET',
     headers: {
       'x-auth-token': getToken()
@@ -79,15 +85,23 @@ export async function getFavorites(user: string): Promise<any> {
   });
   return res.json();
 }
-
-export async function setFavorites(_id: string, user: User ): Promise<Card> {
+export async function getMyCards(_id: string): Promise<Array<Card>> {
+  const res = await fetch(`${cardsUrl}${_id}/myCards`, {
+    method: 'GET',
+    headers: {
+      'x-auth-token': getToken()
+    }
+  });
+  return res.json();
+}
+export async function setFavorites(_id: string, userId: String ): Promise<Card> {
   const res = await fetch(`${cardsUrl}${_id}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       'x-auth-token': getToken()
     },
-    body: JSON.stringify(user),
+    body: JSON.stringify(userId),
   });
   return res.json();
 }

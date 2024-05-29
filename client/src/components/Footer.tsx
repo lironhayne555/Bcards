@@ -36,7 +36,7 @@ return false;
   <BottomNavigationAction  component={Link} label="About" to="/about" icon={<InfoIcon/>}></BottomNavigationAction>
 }
                {  showFavorite() &&
-              <BottomNavigationAction component={Link} to="/cards" label="Favorites" icon={ <FavoriteIcon/>}></BottomNavigationAction>
+              <BottomNavigationAction component={Link} to="/favCards" label="Favorites" icon={ <FavoriteIcon/>}></BottomNavigationAction>
             }
 { showMyCards() &&
  <BottomNavigationAction label="My Cards" component={Link} to="/myCards" icon={<PortraitIcon/>}></BottomNavigationAction>

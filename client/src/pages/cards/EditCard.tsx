@@ -15,7 +15,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Avatar, Fab } from '@mui/material';
 import FormLayout from '../../components/FormLayout';
-import { useCardsContext } from '../../CardContext';
 import { editCards, getCardById } from '../../services/CardServices';
 import EditIcon from '@mui/icons-material/Edit';
 import { upload } from '@testing-library/user-event/dist/upload';
@@ -24,10 +23,10 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { Card } from '../../components/RecipeReviewCard';
 import { toast } from 'react-toastify';
 import { useAuth } from '../../AppContext';
+import { log } from 'console';
 function EditCard() {
     const { _id } = useParams();
     const { register, handleSubmit, formState: { errors }, formState } = useForm<Card>();
-    const {cards,setCards } = useCardsContext();
     const [title, setTitle] = useState('');
     const [subtitle, setSubTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -42,20 +41,13 @@ function EditCard() {
     const [street, setStreet] = useState('');
     const [houseNumber, setHouseNumber] = useState('');
     const [zip, setZip] = useState('');
-  
+   const [imageFile, setImageFile] = useState(null);
     const {user} = useAuth();
     const [userId, setUserId] =useState(user?._id)
     const navigate = useNavigate();
     const onSubmit: SubmitHandler<Card> = (data) => editCard();
-    const cancelFunction = () => {
-     navigate('/myCards');
-    }
-    const handleFileChange =(e : any)=>{
-if(e.target.files.length){
-    setImageUrl(e.target.files[0])
-}
-}
-        useEffect(() => {
+
+            useEffect(() => {
 console.log(_id);
         if (!_id) return;
 
@@ -66,26 +58,50 @@ console.log(_id);
               setDescription(json.description);
               setPhone(json.phone);
               setEmail(json.email);
-              setWeb(json.web);
-              setImageUrl(json.imageUrl);
-              console.log( json.imageUrl);
-
-              setimageAlt(json.imageAlt);
+              setWeb(json.web ? json.web : "");
+              setImageUrl(json.imageUrl ? json.imageUrl : "");
+              setimageAlt(json.imageAlt ? json.imageAlt : "");
               setState(json.state)
               setCountry(json.country);
               setCity(json.city);
               setStreet(json.street);
               setHouseNumber((json.houseNumber).toString());
-              setZip(json.zip);
+              setZip(json.zip ? json.zip : "" );
 
             })
     }, [_id])
 
-     function  editCard () {
-  const formData = new FormData();
 
-    formData.append("image", imageUrl)
-console.log(formData.get("image"));
+
+    const cancelFunction = () => {
+     navigate('/myCards');
+    }
+    const handleFileChange =(e : any)=>{
+if(e.target.files.length >0 ){
+    const file = e.target.files[0];
+            const imageUrl = URL.createObjectURL(file);
+            setImageFile(file);
+            setImageUrl(imageUrl);
+}  else {
+        // Clear imageUrl if no file is selected
+        setImageFile(null);
+        setImageUrl('');
+    }
+}
+  useEffect(() => {
+        if (!imageUrl) {
+            setImageFile(null);
+        }
+    }, [imageUrl]);
+ const clearImage = () => {
+        setImageFile(null);
+        setImageUrl('');
+    };
+async function  editCard () {
+  console.log("i am in edit card function");
+  const formData = new FormData();
+    console.log(imageUrl);
+    formData.append("image", imageFile ? imageFile : ""); // Append the actual image file, not the URL
     formData.append("title", title)
     formData.append("subtitle", subtitle)
     formData.append("description", description)
@@ -99,20 +115,20 @@ console.log(formData.get("image"));
     formData.append("street", street)
     formData.append("houseNumber", houseNumber)
     formData.append("zip", zip) 
-console.log(formData.get("zip"));
-console.log(formData)
-    if(userId)
-      formData.append("userId", userId)
-     editCards(formData).then((card) => {
+
+await editCards(_id,formData).then((card) => {
 
                 console.log(card);
                 //onAdd();
-                toast.success("Card has been update");
+              
                 navigate('/myCards');
                 
             })
     }
-    return (   <FormLayout>  <form  onSubmit={handleSubmit(onSubmit)} noValidate>
+    return (
+              <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+              <CssBaseline />
+             <FormLayout>  <form  onSubmit={handleSubmit(onSubmit)} noValidate>
               <div className="avatar-container">
             <Avatar   sx={{ m: 1, bgcolor: 'primary.main' }}>
             <EditIcon />
@@ -126,7 +142,7 @@ console.log(formData)
               <Grid item xs={6}>
                 <TextField
                    {...register('title',{ minLength:{value:2, message:"title length must be at least 2 characters long"}, maxLength:{value:256, message:"title length must be maxium 256 characters long"},
-                  required: "title must be require"})}
+                   })}
                   InputProps={{ inputProps: { min:2, max:256 } }}
                   autoComplete="Title"
                   name="title"
@@ -134,78 +150,78 @@ console.log(formData)
                   fullWidth
                   id="title"
                   label="Title"
-                  value={title}
+                  value={title || ""}
                   onChange={(e)=> setTitle(e.target.value)}
                   autoFocus
                   error={Boolean(errors.title)}
-                  helperText={errors.title?.message}
+                  helperText={errors.title ? errors.title.message : ""}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                   {...register('subtitle',{ minLength:{value:2, message:"subtitle length must be at least 2 characters long"}, maxLength:{value:256, message:"subtitle length must be maxium 256 characters long"},
-                  required: "subtitle must be require"})}
+                   {...register('subtitle',{ minLength:{value:2, message:"subtitle length must be at least 2 characters long"}, maxLength:{value:256, message:"subtitle length must be maxium 256 characters long"}})}
+                  // required: "subtitle must be require"})}
                   fullWidth
                   InputProps={{ inputProps: { min:2, max:256 } }}
                   required
-                  id="subTitle"
-                  value={subtitle}
+                  id="subtitle"
+                  value={subtitle || ""}
                   name="subTitle"
                   label="SubTitle"
                   autoComplete="SubTitle"
                   onChange={(e)=> setSubTitle(e.target.value)}
                   error={Boolean(errors.subtitle)}
-                  helperText={errors.subtitle?.message}
+                  helperText={errors.subtitle ? errors.subtitle.message : ""}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
                   {...register('description',{ minLength:{value:2, message:"description length must be at least 2 characters long"},maxLength: {value:1024, message:"description length must be maxium 1024 characters long"},
-                  required: "description must be require"})}
+                 })}
                   required
                   fullWidth
                   InputProps={{ inputProps: { min:2, max:1024 } }}
                   id="description"
-                  value={description}
+                  value={description || ""}
                   name="description"
                   label="Description"
                   autoComplete="Description"
                   onChange={(e)=> setDescription(e.target.value)}
                    error={Boolean(errors.description)}
-                  helperText={errors.description?.message}
+                  helperText={errors.description ? errors.description.message : ""}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
                    {...register('phone',{ pattern:{value:/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/, message:"phone must be a valid phone number"},
-                  required: "phone must be require"})}
+                  })}
                   required
                   fullWidth
                   id="phone"
-                  value={phone}
+                  value={phone || ""}
                   name="phone"
                   label="Phone"
                   autoComplete="Phone"
                   onChange={(e)=> setPhone(e.target.value)}
                     error={Boolean(errors.phone)}
-                  helperText={errors.phone?.message}
+                  helperText={errors.phone ? errors.phone.message : ""}
                 />
               </Grid>
               <Grid item md={6}>
                 <TextField
                   {...register('email',{ pattern:{value:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, message:"user mail must be a valid mail"},
-                  required: "email must be require"})}
+                 })}
                   required
                   fullWidth
                   id="email"
-                  value={email}
+                  value={email || ""}
                   name="email"
                   label="Email"
                   autoComplete="email"
                   InputProps={{ inputProps: { min:6, max:256 } }}
                   onChange={(e)=> setEmail(e.target.value)}
                    error={Boolean(errors.email)}
-                  helperText={errors.email?.message}
+                  helperText={errors.email ? errors.email.message : ""}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -214,37 +230,49 @@ console.log(formData)
                   fullWidth
                   name="web"
                   label="web"
-                  value={web}
+                  value={web  || ""}
                   type="web"
                   id="web"
                   InputProps={{ inputProps: { min:2, max:1024 } }}                    
                   autoComplete="Website"
                   onChange={(e)=> setWeb(e.target.value)}
                    error={Boolean(errors.web)}
-                  helperText={errors.web?.message}
+                  helperText={errors.web ? errors.web.message : ""}
                 />
               </Grid>
 
-              <Grid item xs={6}>
- <img  src={`${imageUrl}` }/> 
-<TextField value={imageUrl}> </TextField> 
-<label htmlFor="upload-photo">
-  <input
-    style={{ display: 'none' }}
-    id="upload-photo"
-    name="upload-photo"
-    type="file"
-  />
-
-  <Fab
-    color="primary"
-    size="small"
-    component="span"
-    aria-label="add"
-    variant="extended"
-  >upload</Fab>
-</label>
-              </Grid>
+               <Grid item xs={12}>
+                <input
+                    style={{ display: 'none' }}
+                    id="upload-photo"
+                    name="upload-photo"
+                    type="file"
+                    onChange={handleFileChange}
+                />
+                <label htmlFor="upload-photo">
+                    <Fab
+                        color="primary"
+                        size="small"
+                        component="span"
+                        aria-label="add"
+                        variant="extended"
+                    >
+                        Upload
+                    </Fab>
+                </label>
+                <TextField
+                    label="Image URL"
+                    fullWidth
+                    value={imageUrl  || ""}
+                    disabled
+                />
+            </Grid>
+            <Grid item xs={12}>
+                {imageUrl && <img src={imageUrl} alt="Uploaded" style={{ maxWidth: '100%' }} />}
+            </Grid>
+            <Grid item xs={12}>
+                <Button onClick={clearImage}>Clear Image</Button>
+            </Grid>
               <Grid item xs={6}>
                 <TextField
                   fullWidth
@@ -254,11 +282,11 @@ console.log(formData)
                   type="imageAlt"
                   id="imageAlt"
                   InputProps={{ inputProps: { min:6, max:1024 } }}
-                  value={imageAlt}
+                  value={imageAlt  || ""}
                   autoComplete="image-Alt"
                   onChange={(e)=> setimageAlt(e.target.value)}
                    error={Boolean(errors.imageAlt)}
-                  helperText={errors.imageAlt?.message}
+                  helperText={errors.imageAlt ? errors.imageAlt.message : ""}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -269,17 +297,17 @@ console.log(formData)
                   label="State"
                   name="state"
                   InputProps={{ inputProps: { min:2, max:256 } }}
-                  value={state}
+                  value={state  || ""}
                   autoComplete="state"
                   onChange={(e)=> setState(e.target.value)}
                    error={Boolean(errors.state)}
-                  helperText={errors.state?.message}
+                  helperText={errors.state ? errors.state.message : ""}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
                   {...register('country',{ minLength:{value:2, message:"country length must be at least 2 characters long"},maxLength:{value:256, message:"country length must be maxium 256 long"},
-                  required: "country must be require"})}
+                 })}
                   required
                   fullWidth
                   name="country"
@@ -287,55 +315,55 @@ console.log(formData)
                   type="country"
                   id="country"
                   InputProps={{ inputProps: { min:2, max:256 } }}
-                  value={country}
+                  value={country  || ""}
                   autoComplete="country"
                   onChange={(e)=> setCountry(e.target.value)}
                    error={Boolean(errors.country)}
-                  helperText={errors.country?.message}
+                  helperText={errors.country ? errors.country.message : ""}
                 />
               </Grid>
                
               <Grid item xs={6}>
                 <TextField
                   {...register('street',{ minLength:{value:2, message:"street length must be at least 2 characters long"},maxLength:{value:256, message:"street length must be maxium 256 long"},
-                  required: "street must be require"})}
+                  })}
                   required
                   fullWidth
                   name="street"
                   label="Street"
-                  value={street}
+                  value={street  || ""}
                   type="street"
                   InputProps={{ inputProps: { min:2, max:256 } }}
                   id="street"
                   autoComplete="street"
                   onChange={(e)=> setStreet(e.target.value)}
                    error={Boolean(errors.street)}
-                  helperText={errors.street?.message}
+                  helperText={errors.street ? errors.street.message : ""}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
                   {...register('city',{ minLength:{value:2, message:"city length must be at least 2 characters long"},maxLength:{value:256, message:"city length must be maxium 256 long"},
-                  required: "city must be require"})}
+                 })}
                   required
                   fullWidth
                   id="city"
                   label="City"
                   name="city"
                   InputProps={{ inputProps: { min:2, max:256 } }}
-                  value={city}
+                  value={city  || ""}
                   autoComplete="city"
                   onChange={(e)=> setCity(e.target.value)}
                    error={Boolean(errors.city)}
-                  helperText={errors.city?.message}
+                  helperText={errors.city ? errors.city.message : ""}
                 />
               </Grid>
               <Grid item xs={6}>
                 <TextField
                   {...register('houseNumber',{ pattern:{value:/[0-9]{0,3}/, message:"house number must be a number with max 3 digits"},
-                  required: "house number must be require"})}
+                 })}
                   fullWidth
-                  value={houseNumber}
+                  value={houseNumber  || ""}
                   name="houseNumber"
                   label="House Number"
                   type="houseNumber"
@@ -344,7 +372,7 @@ console.log(formData)
                   onChange={(e)=> setHouseNumber(e.target.value)}
                   InputProps={{ inputProps: { max:3 } }}
                    error={Boolean(errors.houseNumber)}
-                  helperText={errors.houseNumber?.message}
+                  helperText={errors.houseNumber ? errors.houseNumber.message : "" }
                 />
               </Grid>
              
@@ -356,11 +384,11 @@ console.log(formData)
                   label="Zip"
                   InputProps={{ inputProps: { min:5, max:50 } }}
                   id="zip"
-                  value={zip}      
+                  value={zip || ""}      
                   autoComplete="zip"
                   onChange={(e)=> setZip(e.target.value)}
                    error={Boolean(errors.zip)}
-                  helperText={errors.zip?.message}
+                  helperText={errors.zip ? errors.zip.message : ""}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -373,28 +401,19 @@ console.log(formData)
                      CANCEL
                     </Button>
               </Grid>
-              {/* <Grid item xs={6}>
-                  <Button
-                    fullWidth
-                     type="submit"
-                     variant="outlined"
-                     >
-                     <AutorenewIcon></AutorenewIcon>
-                    </Button>
-              </Grid> */}
               <Grid item xs={12}>
                   <Button
                     fullWidth
                      type="submit"
                      variant="contained"
-                     sx={{ mt: 3, mb: 2 }}
+                     sx={{ mb:5 }}
                      >
                     SUBMIT
                     </Button>
                     </Grid>
             </Grid>
             </Grid>
-            </form> </FormLayout>);
+            </form> </FormLayout> </Container>);
 }
 
 export default EditCard;

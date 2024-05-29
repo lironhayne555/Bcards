@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../AppContext";
-import { useCardsContext } from "../../CardContext";
-import { Card, CardActions, CardContent, CardMedia, Grid, Typography } from "@mui/material";
+import { Button, Card, CardActions, CardContent, CardMedia, Container, CssBaseline, Grid, Typography } from "@mui/material";
 import { Image, Phone } from "@mui/icons-material";
 import { getCardById } from "../../services/CardServices";
-
+//import "../../css/CardDetails.css";
 function CardDetails () {
     const { _id } = useParams();
-    const {cards,setCards } = useCardsContext();
     const [title, setTitle] = useState('');
     const [subtitle, setSubTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -25,7 +23,12 @@ function CardDetails () {
     const [zip, setZip] = useState('');
   
     const {user} = useAuth();
-    const [userId, setUserId] =useState(user?._id)
+    const [userId, setUserId] =useState(user?._id);
+    const defaultImageUrl = "http://localhost:8080/images/default_image.jpg" ;
+    const navigate = useNavigate();
+      const handleGoBack = () => {
+    navigate(-1); 
+  };
      useEffect(() => {
 console.log(_id);
         if (!_id) return;
@@ -52,56 +55,63 @@ console.log(_id);
             })
     }, [_id])
   return (
-    <Card className='m-5' sx={{ maxWidth: 500 }}>
+     <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+              <CssBaseline />
+    <Card className="cardContainer" sx={{ maxWidth: 300}}>
+      {imageUrl ? (
       <CardMedia
+        className="cardMedia"
         component="img"
-        height="194"
+        height="150"
         src={imageUrl}
+        alt= {imageAlt? imageAlt : "Uploaded Image"}
+      />) : (
+      <CardMedia
+        className='cardMedia'
+        component="img"
+        height="300"
+        src={defaultImageUrl}
+        alt="Default Image"
       />
-      <CardContent> 
-      <Typography gutterBottom variant="h5" component="div">
+)}
+      
+      <CardContent className="cardContainer"> 
+      <Typography gutterBottom variant="h5" component="div"  className='title'>
         {title}
       </Typography>
-      <Typography gutterBottom variant="h6" component="div">
+      <Typography gutterBottom variant="h6" component="div"  className='subtitle'>
         {subtitle}
       </Typography>
       <br></br>
-        <Typography  component="div">
+        <Typography  component="div" className='description'>
         Description: {description}
         </Typography>
-        <Typography  component="div">
+        <Typography  component="div" className='address'>
         Address: {country} ,{city}, {street} ,{houseNumber}, {zip}</Typography>
-        <Typography component="div">
+        <Typography component="div" className='contactInfo'>
         Phone: {phone}
         </Typography>
-        <Typography component="div">
+        <Typography component="div" className='contactInfo'>
         Email: {email}
         </Typography>
-        {web === '' || web === null} {
-        <Typography component="div">
-        Web: {web}
-        </Typography>
-        }
-        {imageAlt === '' || imageAlt === null} {
-         <Typography component="div">
-         ImageAlt: {imageAlt}
-        </Typography>
-        }
-
+          {web && (
+          <Typography component="div" className='contactInfo'>
+            Web: {web}
+          </Typography>
+        )}
       </CardContent>
 
       <CardActions disableSpacing>
       <Grid item container direction="row" style={{display:"flex",justifyContent:"flex-start",alignItems:"flex-start"}} >
       <Grid item container xs={12} spacing={0} style={{display:"flex",justifyContent:"flex-start",alignItems:"flex-start"}} >
-        <Grid>
-        <Typography>    
-        back to all Cards
-        </Typography>
-        </Grid>
+         <Grid>
+                <Button onClick={() => handleGoBack()} className='backButton' size="small">BACK</Button>
+              </Grid>
           </Grid>
         </Grid>
         </CardActions>
     </Card>
+</Container>
   );
 }
 export default CardDetails;

@@ -9,20 +9,19 @@ import Typography from '@mui/material/Typography';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { useNavigate } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Avatar } from '@mui/material';
+import { Avatar, Container, Fab } from '@mui/material';
 import FormLayout from '../../components/FormLayout';
 import AddIcon from '@mui/icons-material/Add';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { addCards, getCards } from '../../services/CardServices';
 import { Card } from '../../components/RecipeReviewCard';
 import { useAuth } from '../../AppContext';
-import { useCardsContext } from '../../CardContext';
 import { toast } from 'react-toastify';
+import "../../css/AddCard.css"
 
-
-function AddCard() {
-    const {onAdd} = useCardsContext(); 
+function AddCard() { 
     const { register, handleSubmit, formState: { errors }, formState } = useForm<Card>();
+    const [cards, setCards] = useState<Array<Card>>([]);
     const [title, setTitle] = useState('');
     const [subtitle, setSubTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -30,7 +29,7 @@ function AddCard() {
     const [email, setEmail] = useState('');
     const [web, setWeb] = useState('');
     const [imageUrl, setImageUrl] = useState("");
-    //const [previewImage, setPreviewImage] = useState<string | null>(null);
+   const [imageFile, setImageFile] = useState(null);
     const [imageAlt, setimageAlt] = useState('');
     const [state, setState] = useState('');
     const [country, setCountry] = useState('');
@@ -43,18 +42,32 @@ function AddCard() {
     const formData = new FormData();
     const navigate = useNavigate();
     const onSubmit: SubmitHandler<Card> = (data) => addCard();
+ async function onAdd() {
+    await getCards().then((json) => {
+      setCards(json);
+    });
+  }
     const cancelFunction = () => {
      navigate('/myCards');
     }
-    const handleFileChange =(e : any)=>{
-if(e.target.files.length){
-    setImageUrl(e.target.files[0])
+const clearImage = () => {
+        setImageFile(null);
+        setImageUrl('');
+    };
+  const handleFileChange =(e : any)=>{
+if(e.target.files.length >0 ){
+    const file = e.target.files[0];
+            const imageUrl = URL.createObjectURL(file);
+            setImageFile(file);
+            setImageUrl(imageUrl);
+}  else {
+        // Clear imageUrl if no file is selected
+        setImageFile(null);
+        setImageUrl('');
+    }
 }
-}
-
-     function addCard () {
-    formData.append("image", imageUrl)
-
+  function addCard () { 
+    formData.append("image", imageFile ? imageFile : "")
     formData.append("title", title)
     formData.append("subtitle", subtitle)
     formData.append("description", description)
@@ -62,18 +75,19 @@ if(e.target.files.length){
     formData.append("email", email)
     formData.append("web", web)
     formData.append("imageAlt", imageAlt)
-    formData.append("state", state)
     formData.append("country", country)
     formData.append("city", city)
     formData.append("street", street)
     formData.append("houseNumber", houseNumber)
     formData.append("zip", zip) 
+console.log(imageFile);
+
     if(userId)
       formData.append("userId", userId)
      addCards(formData).then((card) => {
                 
                 console.log(card);
-if(!card)
+if(card)
 {
                 onAdd();
                 toast.success("Card has been added");
@@ -83,7 +97,11 @@ else{
 }               
             })
     }
-    return (    <FormLayout>  <form onSubmit={handleSubmit(onSubmit)} noValidate>
+    return (    
+              <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+              <CssBaseline />
+
+              <FormLayout>  <form onSubmit={handleSubmit(onSubmit)} noValidate>
               <div className="avatar-container">
             <Avatar   sx={{ m: 1, bgcolor: 'primary.main' }}>
             <AddIcon />
@@ -159,7 +177,7 @@ else{
                   helperText={errors.phone?.message}
                 />
               </Grid>
-              <Grid item md={6}>
+              <Grid item xs={6}>
                 <TextField
                   {...register('email',{ pattern:{value:/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/, message:"user mail must be a valid mail"},
                   required: "email must be require"})}
@@ -191,17 +209,39 @@ else{
                 />
               </Grid>
 
-              <Grid item xs={6}>
-                <TextField
-                  autoComplete="image-url"
-                  name="imageUrl"
-                  fullWidth
-                  id="imageUrl"
-                  onChange={handleFileChange}
-                  type='file'
-                  inputProps={{accept:'image/*'}}
+              <Grid item xs={12}>
+                <input
+                    style={{ display: 'none' }}
+                    id="upload-photo"
+                    name="upload-photo"
+                    type="file"
+                    onChange={handleFileChange}
                 />
-              </Grid>
+                <label htmlFor="upload-photo">
+                    <Fab
+                        color="primary"
+                        size="small"
+                        component="span"
+                        aria-label="add"
+                        variant="extended"
+                        className='mb-3'
+                    >
+                        Upload
+                    </Fab>
+                </label>
+                <TextField
+                    label="Image URL"
+                    fullWidth
+                    value={imageUrl  || ""}
+                    disabled
+                />
+            </Grid>
+            <Grid item xs={12}>
+                {imageUrl && <img src={imageUrl} alt="Uploaded" style={{ maxWidth: '100%' }} />}
+            </Grid>
+            <Grid item xs={12}>
+                <Button onClick={clearImage}>Clear Image</Button>
+            </Grid>
               <Grid item xs={6}>
                 <TextField
                    {...register('imageAlt',{ minLength:{value:6, message:"Image alt length must be at least 6 characters long"},maxLength:{value:1024, message:"Image Alt length must be maxium 1024 long"}})}
@@ -215,20 +255,6 @@ else{
                   InputProps={{ inputProps: { min:6, max:1024 } }}
                    error={Boolean(errors.imageAlt)}
                   helperText={errors.imageAlt?.message}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                   {...register('state',{ minLength:{value:2, message:"state length must be at least 2 characters long"},maxLength:{value:256, message:"state length must be maxium 256 long"}})}
-                  fullWidth
-                  id="state"
-                  label="State"
-                  name="state"
-                  autoComplete="state"
-                  onChange={(e)=> setState(e.target.value)}
-                  InputProps={{ inputProps: { min:2, max:256 } }}
-                   error={Boolean(errors.state)}
-                  helperText={errors.state?.message}
                 />
               </Grid>
               <Grid item xs={6}>
@@ -287,6 +313,7 @@ else{
                   {...register('houseNumber',{ pattern:{value:/[0-9]{1,3}/, message:"house number must be a number with max 3 digits"},
                   required: "house number must be require"})}
                   fullWidth
+                  required
                   InputProps={{ inputProps: { max: 3 } }}
                   name="houseNumber"
                   label="House Number"
@@ -326,28 +353,19 @@ else{
                      CANCEL
                     </Button>
               </Grid>
-              {/* <Grid item xs={6}>
-                  <Button
-                    fullWidth
-                    
-                     variant="outlined"
-                     >
-                     <AutorenewIcon></AutorenewIcon>
-                    </Button>
-              </Grid> */}
-              <Grid item xs={12}>
-                  <Button
+              <Grid item xs={12} >
+                  <Button 
                     fullWidth
                      type="submit"
                      variant="contained"
-                     sx={{ mt: 3, mb: 2 }}
+                     sx={{ mb:5 }}
                      >
                     SUBMIT
                     </Button>
                     </Grid>
             </Grid>
             </Grid>
-            </form> </FormLayout>);
+            </form> </FormLayout> </Container>);
 }
 
 export default AddCard;

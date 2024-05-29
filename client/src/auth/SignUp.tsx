@@ -144,7 +144,7 @@ export default function SignUp() {
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  {...register('phone',{ pattern:{value:/0[0-9]{1,2}\-?\s?[0-9]{3}\s?[0-9]{4}]/, message:"phone must be a valid phone number"},
+                  {...register('phone',{ pattern:{value:/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/, message:"phone must be a valid phone number"},
                   required: "phone must be require"})}
                   required
                   fullWidth

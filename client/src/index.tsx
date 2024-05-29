@@ -5,7 +5,6 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter, BrowserRouter as Router} from 'react-router-dom';
 import { AppContextProvider } from './AppContext';
-import { CardContextProvider } from './CardContext'
 import "react-toastify/dist/ReactToastify.min.css";import { SearchContext, SearchProvider } from './searchContext';
 ;
 
@@ -14,15 +13,15 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
+<AppContextProvider>
   <BrowserRouter>
-  <AppContextProvider>
-<CardContextProvider>
+  
 <SearchProvider>
       <App />
 </SearchProvider>
-</CardContextProvider>
-  </AppContextProvider>
+  
   </BrowserRouter>
+</AppContextProvider>
   </React.StrictMode>
 );
 

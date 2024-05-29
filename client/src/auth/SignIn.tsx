@@ -13,7 +13,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { User } from './SignUp';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import FormLayout from '../components/FormLayout';
 import { useNavigate } from 'react-router-dom';
 import * as tokenManager from './TokenManager';
@@ -38,6 +38,7 @@ export default function SignIn() {
   const cancelFunction = () => {
      navigate('/cards');
     }
+
   function login(data:User) {
   signin({
         email,
@@ -51,7 +52,6 @@ export default function SignIn() {
             })
 
   }
-
   return (
            <FormLayout>  <form onSubmit={handleSubmit(onSubmit)} noValidate>
               <div className="avatar-container">
@@ -73,6 +73,7 @@ export default function SignIn() {
               id="email"
               label="Email Address"
               name="email"
+              value={email}
               autoComplete="email"
               onChange={(e)=> setEmail(e.target.value)}
               autoFocus
@@ -91,6 +92,7 @@ export default function SignIn() {
               label="Password"
               type="password"
               id="password"
+              value={password}
               onChange={(e)=> setPassword(e.target.value)}
               autoComplete="current-password"
               error={Boolean(errors.password)}

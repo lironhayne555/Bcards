@@ -41,6 +41,7 @@ const cardSchema = new mongoose.Schema({
     },
     imageUrl: {
         type: String,
+        required: false ,
         minlength: 6,
         maxlength: 1024,
     },
@@ -48,12 +49,6 @@ const cardSchema = new mongoose.Schema({
         type: String,
         minlength: 6,
         maxlength: 1024,
-    },
-    state: {
-        type: String,
-        require: true,
-        minlength: 2,
-        maxlength: 256,
     },
      country: {
         type: String,

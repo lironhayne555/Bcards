@@ -3,21 +3,18 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../AppContext";
 
 interface Props {
+    user :any,
     children: ReactNode
 }
 
-function AdminGuard({ children }: Props) {
-    const {user} = useAuth();
-
-    function isNotAdmin(): boolean {
-        return !(user?.isAdmin)
-    }
-
-    return isNotAdmin() ? (
-        <Navigate
-            to="/"
-            replace={true}
-        />
+function AdminGuard({ children,user }: Props) {
+    
+    return user && !user.isAdmin ? (
+        // <Navigate
+        //     to="/adminPanel"
+           
+        // />
+<p> אתה לא מורשה </p>
     ) : (
         <>{children}</>
 

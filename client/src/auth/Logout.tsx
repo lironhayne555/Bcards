@@ -3,10 +3,11 @@ import { Avatar, Button, ClickAwayListener, Grow, MenuItem, MenuList, Paper, Pop
 import { log } from "console";
 import React from "react";
 import { Route, useNavigate } from "react-router-dom";
+import { useAuth } from "../AppContext";
 let profile = require('../profile.png');
  export default function Logout() {
    const navigate = useNavigate();
-
+ const { setUser } = useAuth();
   const handleClose = (event: Event | React.SyntheticEvent) => {
     if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {     
     }
@@ -18,6 +19,7 @@ let profile = require('../profile.png');
     function handleClickLoguot(){
         setOpen(false);
         removeUser();
+        setUser(null);
        navigate('/login');
     }
     

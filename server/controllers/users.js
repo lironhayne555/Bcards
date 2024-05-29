@@ -5,6 +5,15 @@ const bcrypt = require('bcrypt');
 const config = require('../config/dev');
 
 module.exports = {
+  getUsers: async function (req, res, next) {
+    try {
+      const result = await User.find();
+      res.json(result);
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ error: "error getting users" });
+    }
+  },
     login: async function (req, res, next) {
 
         const schema = joi.object({
@@ -125,4 +134,67 @@ module.exports = {
             res.status(400).json({ error: 'error sign up new user' });
         }
     },
+delete: async function (req, res, next) {
+    try {
+      const scheme = joi.object({
+        _id: joi.string().required(),
+      });
+
+      const { error, value } = scheme.validate({ _id: req.params.id });
+
+      if (error) {
+        console.log(error.details[0].message);
+        res.status(400).json({ error: "invalid data" });
+        return;
+      }
+     const deleted = await User.findOne({ _id: value._id });
+
+      await User.deleteOne(value).exec();
+      res.json(deleted);
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ error: "error delete vacation" });
+    }
+  },
+ edit: async function (req, res, next) {
+    try {
+      const scheme = joi.object({
+            firstName: joi.string().required().min(2).max(256),
+            lastName: joi.string().required().min(2).max(256),
+            email: joi.string().min(6).max(255).required().email(),
+            middleName: joi.string().min(2).max(256).allow('', null).empty(''),
+            phone: joi.string().min(6).max(256).required(),
+            imageAlt: joi.string().min(6).max(1024).allow('', null).empty(''),
+            country: joi.string().min(2).max(256).required(),
+            city: joi.string().min(2).max(256).required(),
+            street: joi.string().min(2).max(256).required(),
+            houseNumber: joi.number().min(1).max(1000).required(),
+            zip: joi.string().min(5).max(50).allow('', null).empty(''),
+            isBusiness: joi.boolean().required(),
+      });
+
+      const { error, value } = scheme.validate(req.body);
+
+      if (error) {
+        console.log(error.details[0].message);
+        res.status(400).json({ error: "invalid data" });
+        return;
+      }
+
+      const user = await User.findOneAndUpdate(
+        {
+          _id: req.params._id,
+        },
+        value
+      );
+
+      if (!user) return res.status(404).send("Given ID was not found.");
+
+      const updated = await User.findOne({ _id: req.params.id });
+      res.json(updated);
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ error: "fail to update data" });
+    }
+  }
 }

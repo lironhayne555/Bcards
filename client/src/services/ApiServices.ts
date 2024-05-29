@@ -28,8 +28,6 @@ export async function signup(user: User): Promise<User> {
     
 
 }
-
-
 export async function signin(user: User): Promise<User> {
     const res = await fetch(`${usersUrl}login`, {
         method: 'POST',
@@ -41,3 +39,32 @@ export async function signin(user: User): Promise<User> {
     return res.json();
 }
 
+export async function getUsers(): Promise<Array<User>> {
+  const res = await fetch(`${usersUrl}`);
+  return res.json();
+}
+export async function editUserFunction(_id:string,user: User): Promise<User> {
+  const res = await fetch(`${usersUrl}${_id}`, {
+    method: "PATCH",
+    headers: {
+       'Content-Type': 'application/json',
+       'x-auth-token': getToken()
+    },
+    body: JSON.stringify(user),
+  });
+     if (! res.ok){
+toast.error("error edit user");
+return res.json();
+}
+return res.json();
+}
+export async function deleteUser(_id: string): Promise<User> {
+  const res = await fetch(`${usersUrl}${_id}`, {
+    method: "DELETE",
+  });
+   if (! res.ok){
+toast.error("error delete user");
+return res.json();
+}
+return res.json();
+}

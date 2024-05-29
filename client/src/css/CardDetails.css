@@ -1,0 +1,41 @@
+
+.cardContainer {
+  margin: 5px;
+}
+
+
+.cardMedia {
+  height: 300px;
+}
+
+.cardContent {
+  padding: 20px;
+}
+
+
+.title {
+  margin-bottom: 10px;
+}
+
+
+.subtitle {
+  margin-bottom: 20px;
+}
+
+.description {
+  margin-bottom: 20px;
+}
+
+
+.address {
+  margin-bottom: 20px;
+}
+
+.contactInfo {
+  margin-bottom: 20px;
+}
+
+
+.backButton {
+  margin-top: 20px;
+}
