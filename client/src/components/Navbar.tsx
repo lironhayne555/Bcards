@@ -16,10 +16,15 @@ import { verifyToken } from '../auth/TokenManager';
 import Logout from '../auth/Logout';
 import { useAuth } from '../AppContext';
 import { SearchContext } from '../searchContext';
+<<<<<<< HEAD
 import { Link } from 'react-router-dom';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import useMediaQuery from '@mui/material/useMediaQuery';
+=======
+import { log } from 'console';
+import { Link } from 'react-router-dom';
+>>>>>>> 4fb8e15366d33a6c4d04e1b86f5b3ba0d5eaa298
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -63,6 +68,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 function Navbar() {
+<<<<<<< HEAD
   const { user } = useAuth();
   const { searchValue, setSearchValue } = React.useContext(SearchContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -71,6 +77,33 @@ function Navbar() {
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+=======
+const {user} = useAuth();
+function showAbout() : boolean {
+if(!verifyToken() || verifyToken()) 
+    return true;
+return false;
+}
+
+function showFavCards() : boolean {
+if(verifyToken()) 
+    return true;
+return false;
+}
+function showMyCards() : boolean {
+if((user?.isAdmin || user?.isBusiness) && verifyToken()) 
+    return true;
+return false;
+}
+function showAdminPannel() : boolean {
+if((user?.isAdmin)  && verifyToken()) 
+    return true;
+return false;
+}
+
+  const [mode, setMode] = useState<'light' | 'dark'>('light');
+  const { searchValue, setSearchValue } = React.useContext(SearchContext);
+>>>>>>> 4fb8e15366d33a6c4d04e1b86f5b3ba0d5eaa298
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -97,6 +130,7 @@ function Navbar() {
     return true;
   }
 
+<<<<<<< HEAD
   function showFavCards() {
     return verifyToken();
   }
@@ -108,6 +142,61 @@ function Navbar() {
   function showAdminPannel() {
     return user?.isAdmin && verifyToken();
   }
+=======
+    return (     <Box sx={{ flexGrow: 1 }}>
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            sx={{ mr: 2 }}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography
+            variant="h6"
+            noWrap
+            component="div"
+            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+          >
+        <Link to='/cards'><span color="inherit" className='logo'>BCards</span></Link>
+{showAbout() &&
+            <Link to="/about" style={{ textDecoration: 'none' ,color:"white"}}>
+            <Button  color="inherit">ABOUT</Button>
+            </Link>
+}
+            { showFavCards() &&
+<Link to="/favCards" style={{ textDecoration: 'none' ,color:"white"}}>
+ <Button  color="inherit">FAV CARDS</Button>
+</Link>
+}
+           { showMyCards() &&
+            <Link to="/myCards" style={{ textDecoration: 'none' ,color:"white"}}>
+             <Button color="inherit">MY CARDS</Button> 
+            </Link>
+            }
+             { showAdminPannel() && 
+               <Link to="/adminPanel" style={{ textDecoration: 'none' ,color:"white"}}>
+              <Button color="inherit">ADMIN PANEL</Button>  
+              </Link>
+            }
+           
+          </Typography>
+          
+          <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+              value={searchValue}
+              onInput={handleSearchChange}
+            />
+          </Search>
+>>>>>>> 4fb8e15366d33a6c4d04e1b86f5b3ba0d5eaa298
 
   return (
     <ThemeProvider theme={theme}>
@@ -217,7 +306,24 @@ function Navbar() {
         </Menu>
       </Box>
     </ThemeProvider>
+<<<<<<< HEAD
   );
+=======
+          <Link to="/signup" style={{ textDecoration: 'none' ,color:"white"}}>
+          <Button color="inherit">SIGNUP</Button>
+          </Link>
+          { !verifyToken() &&
+                <Link to="/login" style={{ textDecoration: 'none' ,color:"white"}}>
+               <Button color="inherit">LOGIN</Button>
+                </Link>
+          }
+          { verifyToken() && 
+          <Logout></Logout>
+          }   
+        </Toolbar>
+      </AppBar>
+    </Box>);
+>>>>>>> 4fb8e15366d33a6c4d04e1b86f5b3ba0d5eaa298
 }
 
 export default Navbar;
