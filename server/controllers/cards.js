@@ -124,8 +124,8 @@ module.exports = {
         zip: joi.string().min(5).max(50).allow("", null).empty(""),
         userId: joi.string().required(),
       });
-      // const imageFile = req.body.imageFile;
-      // delete req.body.imageFile;
+      const imageFile = req.body.imageFile;
+      delete req.body.imageFile;
       const { error, value } = scheme.validate(req.body);
 
       if (error) {
@@ -133,9 +133,11 @@ module.exports = {
         res.status(400).json({ error: "invalid data" });
         return;
       }
-      if (req.file) {
-let imagefileURL =`http://localhost:8080/images/${req.file.filename}`;
-       
+      if (req.body.imageUrl) {
+        let imagefileURL = req.body.imageUrl.replace(
+          "http://localhost:3000/",
+          "http://localhost:8080/images/"
+        );
         value.imageUrl = imagefileURL;
       }
       const newCards = new Card(value);
@@ -180,6 +182,8 @@ let imagefileURL =`http://localhost:8080/images/${req.file.filename}`;
   edit: async function (req, res, next) {
     try {
       const scheme = joi.object({
+        userId: joi.string().required(),
+        _id: joi.string().required(),
         title: joi.string().required().min(2).max(256),
         subtitle: joi.string().required().min(2).max(256),
         description: joi.string().required().min(2).max(1024),
@@ -202,25 +206,24 @@ let imagefileURL =`http://localhost:8080/images/${req.file.filename}`;
         zip: joi.string().min(5).max(50).allow("", null).empty(""),
       });
       const { error, value } = scheme.validate(req.body);
-
       if (error) {
         console.log(error.details[0].message);
         res.status(400).json({ error: "invalid data" });
         return;
       }
-      if (req.file) {
-        let imagefileURL = req.file.path.replace(
-          /^public\\images\\/,
-          "http://localhost:8080/images/"
-        );
-        value.imageUrl = imagefileURL;
-      } else {
-        value.imageUrl = "";
-      }
+      // if (req?.file) {
+      //   let imagefileURL = req.file.path.replace(
+      //     /^public\\images\\/,
+      //     "http://localhost:8080/images/"
+      //   );
+      //   value.imageUrl = imagefileURL;
+      // } else {
+      //   value.imageUrl = "";
+      // }
 
       const card = await Card.findOneAndUpdate(
         {
-          _id: req.params._id,
+          _id: req.body._id,
         },
         value
       );
@@ -232,48 +235,6 @@ let imagefileURL =`http://localhost:8080/images/${req.file.filename}`;
     } catch (err) {
       console.log(err);
       res.status(400).json({ error: "fail to update data" });
-    }
-  },
-
-  setFavorite: async function (req, res, next) {
-    const cardId = req.params._id;
-    const userId = req.body;
-    let status = false;
-    try {
-      const card = await Card.findById(cardId);
-      const user = await User.findById(userId);
-      if (!card) {
-        return res.status(404).json({ message: "Card not found" });
-      }
-
-      const cardIndex = card.favorites.indexOf(userId);
-      const userIndex = user.favorites.indexOf(cardId);
-
-      if (cardIndex === -1) {
-        card.favorites.push(userId);
-        status = true;
-      } else {
-        card.favorites.splice(cardIndex, 1);
-        status = false;
-      }
-
-      if (userIndex === -1) {
-        user.favorites.push(cardId);
-      } else {
-        user.favorites.splice(userIndex, 1);
-      }
-
-      await card.save();
-      await user.save();
-      const { title } = card;
-
-      return res.status(200).json({ title, status });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({
-        status: "fail",
-        message: err.message,
-      });
     }
   },
 };

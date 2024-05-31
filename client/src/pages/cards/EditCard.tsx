@@ -1,36 +1,24 @@
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import AutorenewIcon from "@mui/icons-material/Autorenew";
-import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { Avatar, Fab } from "@mui/material";
-import FormLayout from "../../components/FormLayout";
-import { editCards, getCardById } from "../../services/CardServices";
 import EditIcon from "@mui/icons-material/Edit";
-import { upload } from "@testing-library/user-event/dist/upload";
-import React from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { AddCardForm, Card } from "../../components/RecipeReviewCard";
-import { toast } from "react-toastify";
+import { Avatar, Fab } from "@mui/material";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../AppContext";
-import { log } from "console";
+import FormLayout from "../../components/FormLayout";
+import { AddCardForm, Card } from "../../components/RecipeReviewCard";
+import { editCards, getCardById } from "../../services/CardServices";
 function EditCard() {
   const { _id } = useParams();
   const {
     register,
     handleSubmit,
     formState: { errors },
-    formState,
   } = useForm<Card>();
   const [cardForm, setCardForm] = useState({} as AddCardForm);
   const navigate = useNavigate();
@@ -39,6 +27,8 @@ function EditCard() {
     if (!_id) return;
     getCardById(_id).then((json) => {
       if (user?._id) {
+        delete json.__v;
+
         setCardForm({ ...json, userId: user?._id });
       }
     });
@@ -50,17 +40,17 @@ function EditCard() {
   const handleFileChange = (e: any) => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
-      const imageUrl = URL.createObjectURL(file);
+      // const imageUrl = URL.createObjectURL(file);
     }
   };
   const clearImage = () => {
     cardForm.imageFile = null;
     cardForm.imageUrl = "";
   };
-  const removeBlob = (imageUrl: string) => {
-    return imageUrl.substring(5);
-  };
-  const onSubmit = async () => 
+  // const removeBlob = (imageUrl: string) => {
+  //   return imageUrl.substring(5);
+  // };
+  const onSubmit = async () => {
     await editCards(cardForm);
     navigate("/myCards");
   };
@@ -68,7 +58,7 @@ function EditCard() {
   const onInput = (element: any) => {
     setCardForm({ ...cardForm, [element.name]: element.value });
   };
-return (
+  return (
     <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <CssBaseline />
       <FormLayout>

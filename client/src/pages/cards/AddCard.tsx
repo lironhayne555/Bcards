@@ -1,37 +1,29 @@
+import AddIcon from "@mui/icons-material/Add";
+import { Avatar, Container, Fab } from "@mui/material";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import AutorenewIcon from "@mui/icons-material/Autorenew";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { ChangeEvent, useEffect, useState } from "react";
-import { Avatar, Container, Fab } from "@mui/material";
-import FormLayout from "../../components/FormLayout";
-import AddIcon from "@mui/icons-material/Add";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { addCards, getCards } from "../../services/CardServices";
-import { AddCardForm, Card } from "../../components/RecipeReviewCard";
 import { useAuth } from "../../AppContext";
-import { toast } from "react-toastify";
+import FormLayout from "../../components/FormLayout";
+import { AddCardForm, Card } from "../../components/RecipeReviewCard";
 import "../../css/AddCard.css";
-import { log } from "console";
+import { addCards } from "../../services/CardServices";
 
 function AddCard() {
   const {
     register,
     handleSubmit,
     formState: { errors },
-    formState,
   } = useForm<Card>();
   const { user } = useAuth();
   const [cardForm, setCardForm] = useState({} as AddCardForm);
   const formData = new FormData();
   const navigate = useNavigate();
-  async function onAdd() {}
   const cancelFunction = () => {
     navigate("/myCards");
   };
@@ -67,8 +59,6 @@ function AddCard() {
     return imageUrl.substring(5);
   };
   const onSubmit = async () => {
-    console.log(formData);
-
     await addCards(cardForm);
     navigate("/myCards");
   };

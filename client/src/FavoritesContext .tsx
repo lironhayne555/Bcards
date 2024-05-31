@@ -9,7 +9,7 @@ import {
 import { useForceUpdate } from "./components/useForceUpdate";
 import { useAuth } from "./AppContext";
 import { toast } from "react-toastify";
-import { getFavorites, setFavorites } from "./services/CardServices";
+import { getFavorites } from "./services/CardServices";
 import { Card } from "./components/RecipeReviewCard";
 import React from "react";
 interface FavoritesContextType {

@@ -1,29 +1,26 @@
-import * as React from "react";
-import { styled } from "@mui/material/styles";
+import DeleteIcon from "@mui/icons-material/Delete";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ModeIcon from "@mui/icons-material/Mode";
+import PhoneIcon from "@mui/icons-material/Phone";
+import { Button, CardContent, Grid } from "@mui/material";
 import Card from "@mui/material/Card";
-import CardMedia from "@mui/material/CardMedia";
 import CardActions from "@mui/material/CardActions";
+import CardMedia from "@mui/material/CardMedia";
 import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import PhoneIcon from "@mui/icons-material/Phone";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ModeIcon from "@mui/icons-material/Mode";
-import { Button, CardContent, Grid } from "@mui/material";
-import { verifyToken } from "../auth/TokenManager";
-import { useAuth } from "../AppContext";
+import { styled } from "@mui/material/styles";
+import * as React from "react";
 import { useLocation } from "react-router-dom";
-import { useRecipeReviewCard } from "./useRecipeReviewCard";
-import { useEffect } from "react";
-import { setFavorites } from "../services/CardServices";
-import { User } from "../auth/SignUp";
-import { toast } from "react-toastify";
+import { useAuth } from "../AppContext";
+import { verifyToken } from "../auth/TokenManager";
 import { useForceUpdate } from "./useForceUpdate";
+import { useRecipeReviewCard } from "./useRecipeReviewCard";
 export interface AddCardForm extends Card {
   userId: string;
   imageFile?: File | null;
 }
 export interface Card {
+  __v?: number;
   _id?: string;
   title: string;
   subtitle: string;
@@ -40,7 +37,6 @@ export interface Card {
   houseNumber: number | string;
   zip: string;
   userId: string | null;
-  favorites?: [] | null;
   formData?: FormData | null;
   handleDelete: Function;
   handleUpdate: Function;
@@ -76,39 +72,31 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
+interface RecipeReviewCardProps {
+  card: Card;
+  isFav?: boolean;
+  handleUpdate: Function;
+  handleDelete: Function;
+  handleSetFavs: Function;
+}
+
 export const RecipeReviewCard = ({
-  _id,
-  title,
-  subtitle,
-  description,
-  phone,
-  email,
-  web,
-  imageUrl,
-  imageAlt,
-  state,
-  country,
-  street,
-  houseNumber,
-  city,
-  zip,
-  favorites,
+  card,
+  isFav,
   handleDelete,
-  handleUpdate,
   handleSetFavs,
-}: Card) => {
+  handleUpdate,
+}: RecipeReviewCardProps) => {
   const { showCrud, favsStatus, setFavsStatus, onClickPhone, onMoreDetails } =
     useRecipeReviewCard();
   const forceUpdate = useForceUpdate();
   const [expanded, setExpanded] = React.useState(false);
   const { user } = useAuth();
-  const [isRedHeart, setIsRedHeart] = React.useState(false);
   //const [isRedHeart, setIsRedHeart] = useState(false);
   const defaultImageUrl = "http://localhost:8080/images/default_image.jpg";
   const locationPathname = useLocation().pathname;
   function showButtonDelete(): boolean {
-    if ((user?.isAdmin || showCrud) && locationPathname === "/myCards")
-      return true;
+    if (showCrud && locationPathname === "/myCards") return true;
     return false;
   }
 
@@ -121,6 +109,7 @@ export const RecipeReviewCard = ({
     return false;
   }
   function showButtonUpdate(): boolean {
+    return true;
     if ((user?.isAdmin || showCrud) && locationPathname === "/myCards")
       return true;
     return false;
@@ -128,18 +117,18 @@ export const RecipeReviewCard = ({
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  useEffect(() => {
-    const ifCardIsFavorite = (userId: string | null | undefined) => {
-      favorites?.forEach((id) => {
-        if (id === userId) {
-          setIsRedHeart(true);
-        }
-      });
-    };
-    if (user) {
-      ifCardIsFavorite(user._id);
-    }
-  }, [favorites]);
+  // useEffect(() => {
+  //   const ifCardIsFavorite = (userId: string | null | undefined) => {
+  //     favorites?.forEach((id) => {
+  //       if (id === userId) {
+  //         setIsRedHeart(true);
+  //       }
+  //     });
+  //   };
+  //   if (user) {
+  //     ifCardIsFavorite(user._id);
+  //   }
+  // }, [favorites]);
 
   return (
     <Card
@@ -153,12 +142,12 @@ export const RecipeReviewCard = ({
       }}
       className="m-5"
     >
-      {imageUrl ? (
+      {card.imageUrl ? (
         <CardMedia
           component="img"
           height="194"
-          src={imageUrl}
-          alt={imageAlt ? imageAlt : "Uploaded Image"}
+          src={card.imageUrl}
+          alt={card.imageAlt ? card.imageAlt : "Uploaded Image"}
           sx={{ objectFit: "cover", maxHeight: "120px", maxWidth: "100%" }}
         />
       ) : (
@@ -173,15 +162,15 @@ export const RecipeReviewCard = ({
 
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {title}
+          {card.title}
         </Typography>
         <Typography gutterBottom variant="h6" component="div">
-          {subtitle}
+          {card.subtitle}
         </Typography>
         <br></br>
-        <Typography component="div">Phone: {phone}</Typography>
+        <Typography component="div">Phone: {card.phone}</Typography>
         <Typography component="div">
-          Address: {street} {houseNumber}, {city} ,{country}
+          Address: {card.street} {card.houseNumber}, {card.city} ,{card.country}
         </Typography>
       </CardContent>
 
@@ -210,7 +199,7 @@ export const RecipeReviewCard = ({
             <Grid item xs={1.5}>
               {showButtonDelete() && (
                 <IconButton
-                  onClick={() => handleDelete(_id ? _id : "")}
+                  onClick={() => handleDelete(card._id ? card._id : "")}
                   aria-label="delete"
                 >
                   <DeleteIcon></DeleteIcon>
@@ -221,7 +210,7 @@ export const RecipeReviewCard = ({
               {showButtonUpdate() && (
                 <IconButton
                   aria-label="update"
-                  onClick={() => handleUpdate(_id ? _id : "")}
+                  onClick={() => handleUpdate(card._id ? card._id : "")}
                 >
                   <ModeIcon></ModeIcon>
                 </IconButton>
@@ -231,7 +220,7 @@ export const RecipeReviewCard = ({
             <Grid item xs={1.5}>
               {showButtonPhone() && (
                 <IconButton
-                  onClick={() => onClickPhone(_id ? _id : "")}
+                  onClick={() => onClickPhone(card._id ? card._id : "")}
                   aria-label="contact us"
                 >
                   <PhoneIcon></PhoneIcon>
@@ -243,16 +232,16 @@ export const RecipeReviewCard = ({
                 <IconButton
                   aria-label="add to favorites"
                   onClick={() => {
-                    handleSetFavs(_id ? _id : "");
+                    handleSetFavs(card._id ? card._id : "");
                   }}
                 >
-                  <FavoriteIcon style={{ color: isRedHeart ? "red" : "" }} />
+                  <FavoriteIcon style={{ color: isFav ? "red" : "" }} />
                 </IconButton>
               )}
             </Grid>
             <Grid>
               <Button
-                onClick={() => onMoreDetails(_id ? _id : "")}
+                onClick={() => onMoreDetails(card._id ? card._id : "")}
                 size="small"
               >
                 More Details

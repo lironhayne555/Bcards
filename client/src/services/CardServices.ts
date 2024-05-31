@@ -9,14 +9,16 @@ const cardsUrl = `${serverUrl}cards/`;
 export async function addCards(cardForm: AddCardForm): Promise<Card> {
   let formData = new FormData();
   for (const key in cardForm) {
-      if(key === "imageFile" && cardForm.imageFile)
-{       
-formData.append("imageFile",cardForm.imageFile, cardForm.imageFile.name||'default-name');
-}
-else{
-    formData.append(key,(cardForm as any)[key])
+    if (key === "imageFile" && cardForm.imageFile) {
+      formData.append(
+        "imageFile",
+        cardForm.imageFile,
+        cardForm.imageFile.name || "default-name"
+      );
+    } else {
+      formData.append(key, (cardForm as any)[key]);
+    }
   }
-}
   //console.log(cardForm)
   const res = await fetch(`${cardsUrl}`, {
     method: "POST",
@@ -35,25 +37,28 @@ else{
   return res.json();
 }
 
-export async function editCards(_id: any, cardForm: AddCardForm): Promise<Card> {
+export async function editCards(cardForm: AddCardForm): Promise<Card> {
+  // let editForm = new FormData();
+  // for (const key in editForm) {
+  //   if (key === "imageFile" && cardForm.imageFile) {
+  //     editForm.append(
+  //       "imageFile",
+  //       cardForm.imageFile,
+  //       cardForm.imageFile.name || "default-name"
+  //     );
+  //   } else {
+  //     editForm.append(key, (cardForm as any)[key]);
+  //   }
+  // }
+  console.log(cardForm);
 
-    let editForm = new FormData();
-  for (const key in editForm) {
-           if(key === "imageFile" && cardForm.imageFile)
-{       
-editForm.append("imageFile",cardForm.imageFile, cardForm.imageFile.name||'default-name');
-}
-else{
-    editForm.append(key,(cardForm as any)[key])
-  }
-  }
-  const res = await fetch(`${cardsUrl}${_id}`, {
+  const res = await fetch(`${cardsUrl}`, {
     method: "PATCH",
     headers: {
-      //'Content-Type': 'multipart/form-data',
+      "Content-Type": "application/json",
       "x-auth-token": getToken(),
     },
-    body: cardForm,
+    body: JSON.stringify(cardForm),
   });
   if (!res.ok) {
     toast.error("error edit card");
@@ -114,17 +119,6 @@ export async function getMyCards(_id: string): Promise<Array<Card>> {
     headers: {
       "x-auth-token": getToken(),
     },
-  });
-  return res.json();
-}
-export async function setFavorites(_id: string, userId: String): Promise<Card> {
-  const res = await fetch(`${cardsUrl}${_id}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-auth-token": getToken(),
-    },
-    body: JSON.stringify(userId),
   });
   return res.json();
 }

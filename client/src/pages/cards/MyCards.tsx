@@ -1,37 +1,25 @@
-import {
-  Avatar,
-  Button,
-  Container,
-  CssBaseline,
-  Grid,
-  Stack,
-  ToggleButton,
-  ToggleButtonGroup,
-} from "@mui/material";
-import FormLayout from "../../components/FormLayout";
-import { Card, RecipeReviewCard } from "../../components/RecipeReviewCard";
-import Title from "../../components/Title";
 import AddIcon from "@mui/icons-material/Add";
+import { Avatar, Button, Container, CssBaseline, Grid } from "@mui/material";
+import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { deleteCard, getCards, getMyCards } from "../../services/CardServices";
-import { useAuth } from "../../AppContext";
-import TableRowsIcon from "@mui/icons-material/TableRows";
-import ListIcon from "@mui/icons-material/List";
-import React from "react";
-import ViewModuleIcon from "@mui/icons-material/ViewModule";
-import { SearchContext } from "../../searchContext";
-import "../../css/CardsPage.css";
-import SkeletonCard from "../../components/Skelton";
-import { useRecipeReviewCard } from "../../components/useRecipeReviewCard";
-import { log } from "console";
 import { toast } from "react-toastify";
+import { useAuth } from "../../AppContext";
+import { Card, RecipeReviewCard } from "../../components/RecipeReviewCard";
+import SkeletonCard from "../../components/Skelton";
+import Title from "../../components/Title";
 import { useForceUpdate } from "../../components/useForceUpdate";
+import "../../css/CardsPage.css";
+import { SearchContext } from "../../searchContext";
+import { deleteCard, getMyCards } from "../../services/CardServices";
+import { setFavorites } from "../../services/ApiServices";
+import { setToken } from "../../auth/TokenManager";
 function MyCard() {
   const [myCards, setMyCards] = useState<Array<Card>>([]);
   const { searchValue } = useContext(SearchContext);
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [favorites, setLocalFavorites] = useState(user?.favorites);
+
   const [loading, setLoading] = useState(true);
   const cardsRef = useRef(myCards);
   const forceUpdate = useForceUpdate();
@@ -46,10 +34,10 @@ function MyCard() {
     try {
       if (user) {
         const cards = await getMyCards(user._id || "");
+
         cardsRef.current = cards;
         //forceUpdate()   ;
       }
-      console.log(cardsRef.current);
     } catch (error) {
       console.error("Error fetching cards:", error);
     }
@@ -97,6 +85,31 @@ function MyCard() {
   function handleClick() {
     navigate("/addCard");
   }
+
+  const onFavCard = async (cardId?: string) => {
+    if (!cardId || !user?._id || !user.favorites) return;
+    updateLocalFav(cardId);
+    localStorage.setItem("userData", JSON.stringify(user));
+    await setFavorites(cardId, user._id);
+  };
+
+  const updateLocalFav = (cardId?: string) => {
+    if (!cardId || !user?._id || !favorites || !user?.favorites) return;
+    const favoriteIndex = favorites.findIndex((fav) => fav === cardId);
+
+    if (favoriteIndex !== -1) {
+      const updatedFavorites = user?.favorites.splice(favoriteIndex, 1);
+
+      setLocalFavorites([...updatedFavorites]);
+    } else {
+      setLocalFavorites([...favorites, cardId]);
+    }
+  };
+
+  const isCardFav = (cardId?: string) => {
+    if (!cardId || !favorites) return false;
+    return favorites.includes(cardId);
+  };
   return (
     <>
       <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
@@ -123,9 +136,11 @@ function MyCard() {
                     <SkeletonCard />
                   ) : (
                     <RecipeReviewCard
-                      {...cardItem}
-                      handleDelete={onDelete}
-                      handleUpdate={onUpdate}
+                      card={cardItem}
+                      isFav={isCardFav(cardItem?._id)}
+                      handleSetFavs={() => onFavCard(cardItem._id)}
+                      handleDelete={() => onDelete}
+                      handleUpdate={() => onUpdate}
                     />
                   )}
                 </div>
