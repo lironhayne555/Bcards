@@ -47,6 +47,7 @@ else{
     editForm.append(key,(cardForm as any)[key])
   }
   }
+  const res = await fetch(`${cardsUrl}${_id}`, {
     method: "PATCH",
     headers: {
       //'Content-Type': 'multipart/form-data',
