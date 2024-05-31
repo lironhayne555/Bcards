@@ -124,8 +124,8 @@ module.exports = {
         zip: joi.string().min(5).max(50).allow("", null).empty(""),
         userId: joi.string().required(),
       });
-      const imageFile = req.body.imageFile;
-      delete req.body.imageFile;
+      // const imageFile = req.body.imageFile;
+      // delete req.body.imageFile;
       const { error, value } = scheme.validate(req.body);
 
       if (error) {
@@ -133,11 +133,9 @@ module.exports = {
         res.status(400).json({ error: "invalid data" });
         return;
       }
-      if (req.body.imageUrl) {
-        let imagefileURL = req.body.imageUrl.replace(
-          "http://localhost:3000/",
-          "http://localhost:8080/"
-        );
+      if (req.file) {
+let imagefileURL =`http://localhost:8080/images/${req.file.filename}`;
+       
         value.imageUrl = imagefileURL;
       }
       const newCards = new Card(value);

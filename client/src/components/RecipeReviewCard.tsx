@@ -21,7 +21,7 @@ import { toast } from "react-toastify";
 import { useForceUpdate } from "./useForceUpdate";
 export interface AddCardForm extends Card {
   userId: string;
-  imageFile?: any;
+  imageFile?: File | null;
 }
 export interface Card {
   _id?: string;
@@ -31,7 +31,7 @@ export interface Card {
   phone: string;
   email: string;
   web: string;
-  imageUrl: string;
+  imageUrl?: any;
   imageAlt: string;
   state: string;
   country: string;

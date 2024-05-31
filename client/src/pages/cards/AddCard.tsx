@@ -18,6 +18,7 @@ import { AddCardForm, Card } from "../../components/RecipeReviewCard";
 import { useAuth } from "../../AppContext";
 import { toast } from "react-toastify";
 import "../../css/AddCard.css";
+import { log } from "console";
 
 function AddCard() {
   const {
@@ -26,37 +27,18 @@ function AddCard() {
     formState: { errors },
     formState,
   } = useForm<Card>();
-  const [cards, setCards] = useState<Array<Card>>([]);
-  //   const [title, setTitle] = useState('');
-  //   const [subtitle, setSubTitle] = useState('');
-  //   const [description, setDescription] = useState('');
-  //   const [phone, setPhone] = useState('');
-  //   const [email, setEmail] = useState('');
-  //   const [web, setWeb] = useState('');
-  //   const [imageUrl, setImageUrl] = useState("");
-  //  const [imageFile, setImageFile] = useState(null);
-  //   const [imageAlt, setimageAlt] = useState('');
-  //   const [state, setState] = useState('');
-  //   const [country, setCountry] = useState('');
-  //   const [city, setCity] = useState('');
-  //   const [street, setStreet] = useState('');
-  //   const [houseNumber, setHouseNumber] = useState('');
-  //   const [zip, setZip] = useState('');
   const { user } = useAuth();
   const [cardForm, setCardForm] = useState({} as AddCardForm);
-
-  const [userId, setUserId] = useState();
   const formData = new FormData();
   const navigate = useNavigate();
-  // const onSubmit: SubmitHandler<Card> = (data) => addCard();
   async function onAdd() {}
   const cancelFunction = () => {
     navigate("/myCards");
   };
-  // const clearImage = () => {
-  //   setImageFile(null);
-  //   setImageUrl("");
-  // };
+  const clearImage = () => {
+    cardForm.imageFile = null;
+    cardForm.imageUrl = "";
+  };
 
   useEffect(() => {
     if (user?._id) setCardForm({ ...cardForm, userId: user?._id });
@@ -81,41 +63,14 @@ function AddCard() {
       // setImageUrl("");
     }
   };
-  // function addCard() {
-  //   formData.append("image", imageFile ? imageFile : "");
-  //   formData.append("title", title);
-  //   formData.append("subtitle", subtitle);
-  //   formData.append("description", description);
-  //   formData.append("phone", phone);
-  //   formData.append("email", email);
-  //   formData.append("web", web);
-  //   formData.append("imageAlt", imageAlt);
-  //   formData.append("country", country);
-  //   formData.append("city", city);
-  //   formData.append("street", street);
-  //   formData.append("houseNumber", houseNumber);
-  //   formData.append("zip", zip);
-  //   console.log(imageFile);
-
-  //   if (userId) formData.append("userId", userId);
-  //   addCards(formData).then((card) => {
-  //     console.log(card);
-  //     if (card) {
-  //       onAdd();
-  //       toast.success("Card has been added");
-  //       navigate("/myCards");
-  //     } else {
-  //     }
-  //   });
-  // }
   const removeBlob = (imageUrl: string) => {
     return imageUrl.substring(5);
   };
   const onSubmit = async () => {
+    console.log(formData);
+
     await addCards(cardForm);
-    // await getCards().then((json) => {
-    //   setCards(json);
-    // });
+    navigate("/myCards");
   };
 
   const onInput = (element: any) => {
@@ -325,8 +280,7 @@ function AddCard() {
                 )}
               </Grid>
               <Grid item xs={12}>
-                {/* onClick={clearImage} */}
-                <Button>Clear Image</Button>
+                <Button onClick={clearImage}>Clear Image</Button>
               </Grid>
               <Grid item xs={6}>
                 <TextField

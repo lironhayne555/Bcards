@@ -1,21 +1,30 @@
 import { toast } from "react-toastify";
 import { User } from "../auth/SignUp";
 import { getToken } from "../auth/TokenManager";
-import { Card } from "../components/RecipeReviewCard";
+import { AddCardForm, Card } from "../components/RecipeReviewCard";
 
 const serverUrl = "http://localhost:8080/";
 const cardsUrl = `${serverUrl}cards/`;
 
-export async function addCards(cardForm: Card): Promise<Card> {
-  console.log(cardForm);
-
+export async function addCards(cardForm: AddCardForm): Promise<Card> {
+  let formData = new FormData();
+  for (const key in cardForm) {
+      if(key === "imageFile" && cardForm.imageFile)
+{       
+formData.append("imageFile",cardForm.imageFile, cardForm.imageFile.name||'default-name');
+}
+else{
+    formData.append(key,(cardForm as any)[key])
+  }
+}
+  //console.log(cardForm)
   const res = await fetch(`${cardsUrl}`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      //"Content-Type": "application/json",
       "x-auth-token": getToken(),
     },
-    body: JSON.stringify(cardForm),
+    body: formData,
   });
   console.log(res);
 
@@ -26,8 +35,18 @@ export async function addCards(cardForm: Card): Promise<Card> {
   return res.json();
 }
 
-export async function editCards(_id: any, cardForm: FormData): Promise<Card> {
-  const res = await fetch(`${cardsUrl}${_id}`, {
+export async function editCards(_id: any, cardForm: AddCardForm): Promise<Card> {
+
+    let editForm = new FormData();
+  for (const key in editForm) {
+           if(key === "imageFile" && cardForm.imageFile)
+{       
+editForm.append("imageFile",cardForm.imageFile, cardForm.imageFile.name||'default-name');
+}
+else{
+    editForm.append(key,(cardForm as any)[key])
+  }
+  }
     method: "PATCH",
     headers: {
       //'Content-Type': 'multipart/form-data',

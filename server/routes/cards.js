@@ -7,7 +7,6 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
 
     cb(null, './public/images')
-//../client/src/images
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now()
@@ -20,7 +19,7 @@ router.get('/:_id/favs', auth, cards.getUserFavoriteCards);
 router.get('/:_id/myCards',auth, cards.myCards);
 router.get('/', cards.getAll);
 router.get('/:_id', auth, cards.getItem);
-router.post('/', upload.single("image") , cards.add);
+router.post('/', upload.single("imageFile") , cards.add);
 router.post('/:_id',auth, cards.setFavorite);
 router.patch('/:_id', upload.single("image"), cards.edit);
 router.delete('/:_id', auth, cards.delete);
