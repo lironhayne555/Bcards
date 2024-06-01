@@ -10,7 +10,7 @@ import { User } from "./auth/SignUp";
 import { Card } from "./components/RecipeReviewCard";
 import { time } from "console";
 import { number } from "yup";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 interface Context {
   user: User | null;
   setUser: Function;
@@ -27,16 +27,20 @@ export const AppContextProvider = ({
 
   let logoutTimerIdRef = useRef(0);
 
-
   useEffect(() => {
     const theUser = getUser();
 
     if (theUser) {
       setUser(theUser);
     }
+    // else {
+    //   window.location.href = "/login";
+    // }
   }, []);
 
   useEffect(() => {
+    console.log("here");
+
     const autoLogout = () => {
       if (document.visibilityState === "hidden") {
         const timeOutId = window.setTimeout(() => {

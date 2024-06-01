@@ -22,17 +22,21 @@ function Cards() {
   const forceUpdate = useForceUpdate();
   const fetchCards = async () => {
     try {
-      if (user) {
+      if (user && !cards.length) {
         const cards = await getCards();
+        setCards(cards);
         cardsRef.current = cards;
       }
     } catch (error) {
       console.error("Error fetching cards:", error);
     }
   };
+
   useEffect(() => {
-    fetchCards();
-  }, [cardsRef.current]);
+    if (!cards.length) {
+      fetchCards();
+    }
+  }, []);
   useEffect(() => {
     if (searchValue.trim() !== "") {
       const filtered = cards.filter(
@@ -90,8 +94,8 @@ function Cards() {
           mainText="Cards"
           subText="Here you can find business cards from all categories"
         ></Title>
-        {cardsRef.current &&
-          cardsRef.current.map((cardItem) => (
+        {cards &&
+          cards.map((cardItem) => (
             <RecipeReviewCard
               key={cardItem._id}
               card={cardItem}

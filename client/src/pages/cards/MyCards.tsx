@@ -12,12 +12,13 @@ import "../../css/CardsPage.css";
 import { SearchContext } from "../../searchContext";
 import { deleteCard, getMyCards } from "../../services/CardServices";
 import { setFavorites } from "../../services/ApiServices";
-import { setToken } from "../../auth/TokenManager";
+import { setUser as setLocalStorgaeUser } from "../../auth/TokenManager";
 function MyCard() {
   const [myCards, setMyCards] = useState<Array<Card>>([]);
   const { searchValue } = useContext(SearchContext);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
+
   const [favorites, setLocalFavorites] = useState(user?.favorites);
 
   const [loading, setLoading] = useState(true);
@@ -29,21 +30,34 @@ function MyCard() {
     }, 1200);
     return () => clearTimeout(timer);
   }, []);
-
+  const attachUserDetails = (cards: Card[]) => {
+    if (!user) return cards;
+    return cards.map((card) => {
+      return {
+        ...card,
+        phone: user.phone || "",
+        country: user.country || "",
+        city: user.city || "",
+        street: user.street || "",
+        houseNumber: user.houseNumber || 0,
+        zip: user.zip || "",
+      };
+    });
+  };
   const fetchCards = async () => {
     try {
       if (user) {
         const cards = await getMyCards(user._id || "");
+        // cards.forEach((card) => updateLocalFav(card._id));
+        const cardsWithDetails = attachUserDetails(cards);
 
-        cardsRef.current = cards;
-        //forceUpdate()   ;
+        setMyCards(cardsWithDetails);
       }
     } catch (error) {
       console.error("Error fetching cards:", error);
     }
   };
   async function onDelete(_id?: string) {
-    console.log(_id);
     if (window.confirm(`Are you sure to delete ${_id}?`)) {
       try {
         if (_id) {
@@ -92,34 +106,48 @@ function MyCard() {
     navigate("/addCard");
   }
 
+  useEffect(() => {
+    if (user) {
+      setUser({ ...user, favorites });
+      setLocalStorgaeUser({ ...user, favorites });
+    }
+  }, [favorites]);
+
   const onFavCard = async (cardId?: string) => {
     if (!cardId || !user?._id || !user.favorites) return;
     updateLocalFav(cardId);
-    localStorage.setItem("userData", JSON.stringify(user));
+
     await setFavorites(cardId, user._id);
     forceUpdate();
   };
 
   const updateLocalFav = (cardId?: string) => {
     if (!cardId || !user?._id || !favorites || !user?.favorites) return;
-    const favoriteIndex = favorites.findIndex((fav) => fav === cardId);
+    const favoriteIndex = favorites.findIndex((fav) => {
+      return fav === cardId;
+    });
 
     if (favoriteIndex !== -1) {
-      const updatedFavorites = user?.favorites.splice(favoriteIndex, 1);
-
+      const updatedFavorites = favorites.filter(
+        (fav) => fav !== favorites[favoriteIndex]
+      );
       setLocalFavorites([...updatedFavorites]);
     } else {
-      setLocalFavorites([...favorites, cardId]);
+      const updatedFavorites = [...favorites, cardId];
+
+      setLocalFavorites([...updatedFavorites]);
     }
   };
 
   const isCardFav = (cardId?: string) => {
     if (!cardId || !favorites) return false;
+    console.log(favorites.includes(cardId));
+
     return favorites.includes(cardId);
   };
   return (
     <>
-      <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <CssBaseline />
         <Title
           mainText="Cards"
@@ -132,12 +160,12 @@ function MyCard() {
             </Avatar>
           </Button>
         </div>
-        {cardsRef.current.length === 0 ? (
+        {myCards.length === 0 ? (
           <span className="text-center">You don't have cards yet</span>
         ) : (
-          <Grid justifyContent="center" container>
-            {cardsRef.current.map((cardItem) => (
-              <Grid item key={cardItem._id} xs={11} sm={6} md={4}>
+          <Grid justifyContent={"center"} container gridTemplateColumns={3}>
+            {myCards.map((cardItem) => (
+              <Grid item key={cardItem._id}>
                 <div className="card-wrapper">
                   {loading ? (
                     <SkeletonCard />

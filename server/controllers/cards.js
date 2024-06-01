@@ -83,13 +83,12 @@ module.exports = {
 
   add: async function (req, res, next) {
     try {
-      console.log(req.body);
       const scheme = joi.object({
         title: joi.string().required().min(2).max(256),
         subtitle: joi.string().required().min(2).max(256),
         description: joi.string().required().min(2).max(1024),
-        phone: joi.string().min(6).max(256).required(),
-        email: joi.string().min(6).max(256).required().email(),
+        // phone: joi.string().min(6).max(256).required(),
+        // email: joi.string().min(6).max(256).required().email(),
         web: joi.string().min(2).max(1024).allow("", null).empty(""),
         imageUrl: joi
           .string()
@@ -100,11 +99,11 @@ module.exports = {
           .optional(),
         imageAlt: joi.string().min(6).max(1024).allow("", null).empty(""),
         // state: joi.string().min(2).max(256).allow('', null).empty(''),
-        country: joi.string().min(2).max(256).required(),
-        city: joi.string().min(2).max(256).required(),
-        street: joi.string().min(2).max(256).required(),
-        houseNumber: joi.number().min(1).max(1000).required(),
-        zip: joi.string().min(5).max(50).allow("", null).empty(""),
+        // country: joi.string().min(2).max(256).required(),
+        // city: joi.string().min(2).max(256).required(),
+        // street: joi.string().min(2).max(256).required(),
+        // houseNumber: joi.number().min(1).max(1000).required(),
+        // zip: joi.string().min(5).max(50).allow("", null).empty(""),
         userId: joi.string().required(),
       });
       const imageFile = req.body.imageFile;
@@ -116,14 +115,14 @@ module.exports = {
         res.status(400).json({ error: "invalid data" });
         return;
       }
-//       if (req.body.imageUrl.length > 1) {
-//         let imagefileURL = req.body.imageUrl.replace(
-//           "http://localhost:3000/",
-//           "http://localhost:8080/images/"
-//         );
-// console.log(imagefileURL);
-//         value.imageUrl = imagefileURL;
-//       }
+      //       if (req.body.imageUrl.length > 1) {
+      //         let imagefileURL = req.body.imageUrl.replace(
+      //           "http://localhost:3000/",
+      //           "http://localhost:8080/images/"
+      //         );
+      // console.log(imagefileURL);
+      //         value.imageUrl = imagefileURL;
+      //       }
       const newCards = new Card(value);
 
       const result = await newCards.save();

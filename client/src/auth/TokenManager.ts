@@ -1,25 +1,23 @@
 import { User } from "./SignUp";
 
-const tokenKey = 'token';
+const tokenKey = "token";
 const userKey = "userData";
 
 export function setToken(tokenValue?: string) {
-    if (!tokenValue) return;
-    localStorage.setItem(tokenKey, tokenValue);
-
+  if (!tokenValue) return;
+  localStorage.setItem(tokenKey, tokenValue);
 }
 
 export function getToken(): string {
-    return localStorage.getItem(tokenKey) || '';
+  return localStorage.getItem(tokenKey) || "";
 }
 
 export function removeToken() {
-    localStorage.removeItem(tokenKey);
+  localStorage.removeItem(tokenKey);
 }
 
-
 export function verifyToken(): boolean {
-    return getToken().length > 0;
+  return getToken().length > 0;
 }
 
 export function setUser(user: User | null) {
@@ -32,6 +30,7 @@ export function setUser(user: User | null) {
 
 export function getUser() {
   const jsonUser = localStorage.getItem(userKey);
+
   if (jsonUser) {
     const parsedUser = JSON.parse(jsonUser);
     return parsedUser;

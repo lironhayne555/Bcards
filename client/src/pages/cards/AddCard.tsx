@@ -21,6 +21,7 @@ function AddCard() {
     formState: { errors },
   } = useForm<Card>();
   const { user } = useAuth();
+  const [isImageValid, setIsImageValid] = useState(false);
   const [cardForm, setCardForm] = useState({} as AddCardForm);
   const formData = new FormData();
   const navigate = useNavigate();
@@ -59,21 +60,43 @@ function AddCard() {
     return imageUrl.substring(5);
   };
   const onSubmit = async () => {
-    cardForm.email = user?.email ? user.email : "";
-    cardForm.phone = user?.phone ? user.phone : "";
-    cardForm.country = user?.country ? user.country : "";
-    cardForm.city = user?.city ? user.city : "";
-    cardForm.street = user?.street ? user.street : "";
-    cardForm.houseNumber = user?.houseNumber ? user.houseNumber : "";
-    cardForm.zip = user?.zip ? user.zip : "";
-    console.log(cardForm);
+    if (user?._id) {
+      cardForm.userId = user?._id;
+    }
+    // cardForm.email = user?.email ? user.email : "";
+    // cardForm.phone = user?.phone ? user.phone : "";
+    // cardForm.country = user?.country ? user.country : "";
+    // cardForm.city = user?.city ? user.city : "";
+    // cardForm.street = user?.street ? user.street : "";
+    // cardForm.houseNumber = user?.houseNumber ? user.houseNumber : "";
+    // cardForm.zip = user?.zip ? user.zip : "";
 
     await addCards(cardForm);
     navigate("/myCards");
   };
 
-  const onInput = (element: any) => {
+  const onInput = async (element: any) => {
+    let isValid: any = true;
+    if (element.name === "imageUrl") {
+      isValid = checkImageUrl(element.value).then((isValid) => {
+        setIsImageValid(!!isValid);
+      });
+    }
+
     setCardForm({ ...cardForm, [element.name]: element.value });
+  };
+
+  const checkImageUrl = async (url: string) => {
+    return new Promise((resolve) => {
+      const img = document.createElement("img");
+      img.src = url;
+      img.onerror = () => {
+        resolve(false);
+      };
+      img.onload = () => {
+        resolve(true);
+      };
+    });
   };
   return (
     <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
@@ -261,16 +284,18 @@ function AddCard() {
                   </Fab>
                 </label>
                 <TextField
+                  onInput={(ev) => onInput(ev.target)}
                   label={cardForm.imageUrl ? "" : "Image URL"}
                   fullWidth
+                  name="imageUrl"
                   value={cardForm.imageUrl || ""}
-                  disabled
                 />
+                <Typography>{!isImageValid && "Image is not valid"}</Typography>
               </Grid>
               <Grid item xs={12}>
                 {cardForm.imageUrl && (
                   <img
-                    src={`blob:${cardForm.imageUrl}`}
+                    src={`${cardForm.imageUrl}`}
                     alt="Uploaded"
                     style={{ maxWidth: "100%" }}
                   />

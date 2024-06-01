@@ -1,6 +1,6 @@
 import { error, log } from "console";
 import { User } from "../auth/SignUp";
-import { getToken, getUser } from "../auth/TokenManager";
+import { getToken } from "../auth/TokenManager";
 import { Card } from "../components/RecipeReviewCard";
 import { json } from "stream/consumers";
 import { RssFeed } from "@mui/icons-material";
@@ -58,6 +58,7 @@ export async function getFavorites(_id: string): Promise<Array<Card>> {
   });
   return res.json();
 }
+
 export async function getUsers(): Promise<Array<User>> {
   const res = await fetch(`${usersUrl}`);
   return res.json();

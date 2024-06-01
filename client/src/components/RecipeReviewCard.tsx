@@ -132,7 +132,7 @@ export const RecipeReviewCard = ({
           height="194"
           src={card.imageUrl}
           alt={card.imageAlt ? card.imageAlt : "Uploaded Image"}
-          sx={{ objectFit: "cover", maxHeight: "120px", maxWidth: "100%" }}
+          sx={{ objectFit: "cover", height: "200px", maxWidth: "100%" }}
         />
       ) : (
         <CardMedia
@@ -140,11 +140,11 @@ export const RecipeReviewCard = ({
           height="194"
           src={defaultImageUrl}
           alt="Default Image"
-          sx={{ objectFit: "cover", maxHeight: "100%", maxWidth: "100%" }}
+          sx={{ objectFit: "cover", height: "200px", maxWidth: "100%" }}
         />
       )}
 
-      <CardContent>
+      <CardContent sx={{ minHeight: "210px" }}>
         <Typography gutterBottom variant="h5" component="div">
           {card.title}
         </Typography>
