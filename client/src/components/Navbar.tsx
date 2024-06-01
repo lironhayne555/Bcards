@@ -73,11 +73,11 @@ function Navbar() {
   };
 
   function showAbout(): boolean {
-    return verifyToken() !== null;
+    return true;
   }
 
   function showFavCards(): boolean {
-    return verifyToken() !== null;
+    return verifyToken();
   }
 
   const handleMenuClose = () => {
@@ -135,12 +135,21 @@ function Navbar() {
               component="div"
               sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
             >
-              <Link
-                to="/cards"
-                style={{ textDecoration: "none", color: "inherit" }}
-              >
-                BCards
-              </Link>
+              {verifyToken() ? (
+                <Link
+                  to="/cards"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  BCards
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  BCards
+                </Link>
+              )}
             </Typography>
             {!isSmallScreen && (
               <>

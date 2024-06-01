@@ -10,11 +10,11 @@ import IconButton, { IconButtonProps } from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
 import * as React from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../AppContext";
 import { verifyToken } from "../auth/TokenManager";
 import { useForceUpdate } from "./useForceUpdate";
-import { useRecipeReviewCard } from "./useRecipeReviewCard";
+import { getCardById } from "../services/CardServices";
 export interface AddCardForm extends Card {
   userId: string;
   imageFile?: File | null;
@@ -44,18 +44,6 @@ export interface Card {
   setIsRedHeart: Function;
   handleSetFavs: Function;
 }
-
-// interface CardProps extends Card {
-// handleDelete: Function,
-// showCruds:boolean
-// handleSetFave: Function,
-// //isRed: boolean,
-// favsStatus:{[key: string]: boolean },
-// handleUpdate: Function,
-// handleWhatsapp:Function,
-// handleShowDetails:Function
-
-// }
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -87,8 +75,7 @@ export const RecipeReviewCard = ({
   handleSetFavs,
   handleUpdate,
 }: RecipeReviewCardProps) => {
-  const { showCrud, favsStatus, setFavsStatus, onClickPhone, onMoreDetails } =
-    useRecipeReviewCard();
+  const navigate = useNavigate();
   const forceUpdate = useForceUpdate();
   const [expanded, setExpanded] = React.useState(false);
   const { user } = useAuth();
@@ -96,10 +83,20 @@ export const RecipeReviewCard = ({
   const defaultImageUrl = "http://localhost:8080/images/default_image.jpg";
   const locationPathname = useLocation().pathname;
   function showButtonDelete(): boolean {
-    if (showCrud && locationPathname === "/myCards") return true;
+    if (locationPathname === "/myCards") {
+      if (user?._id === card.userId || user?.isAdmin) return true;
+    }
     return false;
   }
+  function onClickPhone(_id: string) {
+    console.log("go to whatsapp");
+  }
 
+  function onMoreDetails(_id: string) {
+    getCardById(_id).then((json) => {
+      navigate(`/cardDetails/${_id}`);
+    });
+  }
   function showButtonPhone(): boolean {
     if (!verifyToken() || verifyToken()) return true;
     return false;
@@ -109,27 +106,14 @@ export const RecipeReviewCard = ({
     return false;
   }
   function showButtonUpdate(): boolean {
-    return true;
-    if ((user?.isAdmin || showCrud) && locationPathname === "/myCards")
-      return true;
+    if (locationPathname === "/myCards") {
+      if (user?._id === card.userId || user?.isAdmin) return true;
+    }
     return false;
   }
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-  // useEffect(() => {
-  //   const ifCardIsFavorite = (userId: string | null | undefined) => {
-  //     favorites?.forEach((id) => {
-  //       if (id === userId) {
-  //         setIsRedHeart(true);
-  //       }
-  //     });
-  //   };
-  //   if (user) {
-  //     ifCardIsFavorite(user._id);
-  //   }
-  // }, [favorites]);
-
   return (
     <Card
       sx={{

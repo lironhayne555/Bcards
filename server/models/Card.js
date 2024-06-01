@@ -25,14 +25,11 @@ const cardSchema = new mongoose.Schema({
     require: true,
     minlength: 6,
     maxlength: 256,
-    unique: true,
   },
   email: {
     type: String,
-    require: true,
     minlength: 6,
     maxlength: 256,
-    unique: true,
   },
   web: {
     type: String,

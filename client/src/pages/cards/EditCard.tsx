@@ -158,7 +158,7 @@ function EditCard() {
                   }
                 />
               </Grid>
-              <Grid item xs={6}>
+              {/* <Grid item xs={6}>
                 <TextField
                   {...register("phone", {
                     pattern: {
@@ -200,7 +200,7 @@ function EditCard() {
                   error={Boolean(errors.email)}
                   helperText={errors.email ? errors.email.message : ""}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={6}>
                 <TextField
                   {...register("web", {
@@ -291,7 +291,7 @@ function EditCard() {
                   helperText={errors.imageAlt ? errors.imageAlt.message : ""}
                 />
               </Grid>
-              <Grid item xs={6}>
+              {/* <Grid item xs={6}>
                 <TextField
                   {...register("country", {
                     minLength: {
@@ -419,7 +419,7 @@ function EditCard() {
                   error={Boolean(errors.zip)}
                   helperText={errors.zip ? errors.zip.message : ""}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <Button
                   fullWidth

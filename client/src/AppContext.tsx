@@ -27,8 +27,6 @@ export const AppContextProvider = ({
 
   let logoutTimerIdRef = useRef(0);
 
-  //  const  [addFavorite,SetAddFavorite] = useState<Array<Card>>([])
-  // const [redHurt,SetRedHurt] = useState('')
 
   useEffect(() => {
     const theUser = getUser();

@@ -1,4 +1,5 @@
 const { User } = require("../models/User");
+const { Card } = require("../models/Card");
 const joi = require("joi");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -23,31 +24,6 @@ module.exports = {
 
       user.save();
 
-      // if (!card) {
-      //   return res.status(404).json({ message: "Card not found" });
-      // }
-
-      // const cardIndex = card.favorites.indexOf(userId);
-      // const userIndex = user.favorites.indexOf(cardId);
-
-      // if (cardIndex === -1) {
-      //   card.favorites.push(userId);
-      //   status = true;
-      // } else {
-      //   card.favorites.splice(cardIndex, 1);
-      //   status = false;
-      // }
-
-      // if (userIndex === -1) {
-      //   user.favorites.push(cardId);
-      // } else {
-      //   user.favorites.splice(userIndex, 1);
-      // }
-
-      // await card.save();
-      // await user.save();
-      // const { title } = card;
-
       return res.status(200);
     } catch (err) {
       console.log(err);
@@ -66,6 +42,7 @@ module.exports = {
       res.status(400).json({ error: "error getting users" });
     }
   },
+
   login: async function (req, res, next) {
     const schema = joi.object({
       email: joi.string().required().min(6).max(256).email(),
@@ -97,13 +74,42 @@ module.exports = {
         name: user.name,
         isAdmin: user.isAdmin,
         isBusiness: user.isBusiness,
+        phone: user.phone,
+        country: user.country,
+        city: user.city,
+        street: user.street,
+        houseNumber: user.houseNumber,
+        zip: user.zip ? user.zip : "",
+        middleName: user.middleName ? user.middleName : ""
       });
     } catch (err) {
       console.log(err);
       res.status(400).send("Invalid data.");
     }
   },
+  getUserFavoriteCards: async function (req, res, next) {
+    try {
+      const _id = req.params._id;
+       if (!_id) {
+        return res.status(404).json({ message: "User not found" });
+      }
+else{
+    const user = await User.findById(_id);
+     const idsCards = await user.favorites
+    const favoriteCards = await Card.find({ _id: { $in: idsCards } }).exec();
+       console.log('Favorite Cards:', favoriteCards);
+      return res.status(200).json(favoriteCards);
+}
 
+      
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        status: "fail",
+        message: err.message,
+      });
+    }
+  },
   signup: async function (req, res, next) {
     const schema = joi.object({
       firstName: joi.string().required().min(2).max(256),

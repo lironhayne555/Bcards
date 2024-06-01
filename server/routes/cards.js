@@ -14,11 +14,10 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-router.get("/:_id/favs", auth, cards.getUserFavoriteCards);
 router.get("/:_id/myCards", auth, cards.myCards);
 router.get("/", cards.getAll);
 router.get("/:_id", auth, cards.getItem);
-router.post("/", upload.single("imageFile"), cards.add);
+router.post("/", cards.add);
 router.patch("/", upload.single("image"), cards.edit);
 router.delete("/:_id", auth, cards.delete);
 

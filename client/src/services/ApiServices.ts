@@ -22,14 +22,14 @@ export async function setFavorites(_id: string, userId: String): Promise<Card> {
   return res.json();
 }
 
-export async function signup(user: User): Promise<User> {
-  user.favorites = [];
+export async function signup(userForm: User): Promise<User> {
+  userForm.favorites = [];
   const res = await fetch(`${usersUrl}signup`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(user),
+    body: JSON.stringify(userForm),
   });
   if (!res.ok) {
     toast.error(" ");
@@ -38,17 +38,26 @@ export async function signup(user: User): Promise<User> {
 
   return res.json();
 }
-export async function signin(user: User): Promise<User> {
+export async function signin(userForm: User): Promise<User> {
   const res = await fetch(`${usersUrl}login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(user),
+    body: JSON.stringify(userForm),
   });
   return res.json();
 }
 
+export async function getFavorites(_id: string): Promise<Array<Card>> {
+  const res = await fetch(`${usersUrl}${_id}/favs`, {
+    method: "GET",
+    headers: {
+      "x-auth-token": getToken(),
+    },
+  });
+  return res.json();
+}
 export async function getUsers(): Promise<Array<User>> {
   const res = await fetch(`${usersUrl}`);
   return res.json();

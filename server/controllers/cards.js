@@ -37,25 +37,7 @@ module.exports = {
   //         res.status(400).json({ error: "error get the cards" });
   //     }
   // },
-  getUserFavoriteCards: async function (req, res, next) {
-    try {
-      const _id = req.params._id;
-      const user = await User.findById(_id).populate("favorites");
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
 
-      const favoriteCards = user.favorites;
-
-      return res.status(200).json(favoriteCards);
-    } catch (err) {
-      console.log(err);
-      res.status(500).json({
-        status: "fail",
-        message: err.message,
-      });
-    }
-  },
   myCards: async function (req, res, next) {
     try {
       const scheme = joi.object({
@@ -101,6 +83,7 @@ module.exports = {
 
   add: async function (req, res, next) {
     try {
+      console.log(req.body);
       const scheme = joi.object({
         title: joi.string().required().min(2).max(256),
         subtitle: joi.string().required().min(2).max(256),
@@ -133,13 +116,14 @@ module.exports = {
         res.status(400).json({ error: "invalid data" });
         return;
       }
-      if (req.body.imageUrl) {
-        let imagefileURL = req.body.imageUrl.replace(
-          "http://localhost:3000/",
-          "http://localhost:8080/images/"
-        );
-        value.imageUrl = imagefileURL;
-      }
+//       if (req.body.imageUrl.length > 1) {
+//         let imagefileURL = req.body.imageUrl.replace(
+//           "http://localhost:3000/",
+//           "http://localhost:8080/images/"
+//         );
+// console.log(imagefileURL);
+//         value.imageUrl = imagefileURL;
+//       }
       const newCards = new Card(value);
 
       const result = await newCards.save();

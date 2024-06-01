@@ -7,28 +7,14 @@ const serverUrl = "http://localhost:8080/";
 const cardsUrl = `${serverUrl}cards/`;
 
 export async function addCards(cardForm: AddCardForm): Promise<Card> {
-  let formData = new FormData();
-  for (const key in cardForm) {
-    if (key === "imageFile" && cardForm.imageFile) {
-      formData.append(
-        "imageFile",
-        cardForm.imageFile,
-        cardForm.imageFile.name || "default-name"
-      );
-    } else {
-      formData.append(key, (cardForm as any)[key]);
-    }
-  }
-  //console.log(cardForm)
   const res = await fetch(`${cardsUrl}`, {
     method: "POST",
     headers: {
-      //"Content-Type": "application/json",
+      "Content-Type": "application/json",
       "x-auth-token": getToken(),
     },
-    body: formData,
+    body: JSON.stringify(cardForm),
   });
-  console.log(res);
 
   if (!res.ok) {
     toast.error("error add card");
@@ -96,16 +82,6 @@ export async function deleteCard(_id: string): Promise<Card> {
 
 export async function getCardById(_id: string): Promise<Card> {
   const res = await fetch(`${cardsUrl}${_id}`, {
-    method: "GET",
-    headers: {
-      "x-auth-token": getToken(),
-    },
-  });
-  return res.json();
-}
-
-export async function getFavorites(_id: string): Promise<Array<Card>> {
-  const res = await fetch(`${cardsUrl}${_id}/favs`, {
     method: "GET",
     headers: {
       "x-auth-token": getToken(),

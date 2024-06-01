@@ -42,28 +42,34 @@ function MyCard() {
       console.error("Error fetching cards:", error);
     }
   };
-  async function onDelete(_id: string) {
+  async function onDelete(_id?: string) {
     console.log(_id);
     if (window.confirm(`Are you sure to delete ${_id}?`)) {
       try {
-        await deleteCard(_id);
-        const updated = cardsRef.current.filter(
-          (card: Card) => card._id !== _id
-        );
-        console.log(updated);
-        //setMyCards(updated);
-        cardsRef.current = updated;
-        forceUpdate();
-        toast.success("Card has been deleted.");
+        if (_id) {
+          await deleteCard(_id);
+          const updated = cardsRef.current.filter(
+            (card: Card) => card._id !== _id
+          );
+          console.log(updated);
+          cardsRef.current = updated;
+          forceUpdate();
+          toast.success("Card has been deleted.");
+        } else {
+          toast.error("No Card to delete");
+        }
       } catch (error) {
-        console.error("Error deleting card:", error);
         toast.error("Failed to delete card.");
       }
     }
   }
 
-  function onUpdate(_id: string) {
-    navigate(`/editCard/${_id}`);
+  function onUpdate(_id?: string) {
+    if (_id) {
+      navigate(`/editCard/${_id}`);
+    } else {
+      toast.error("No Card to delete");
+    }
   }
   useEffect(() => {
     fetchCards();
@@ -91,6 +97,7 @@ function MyCard() {
     updateLocalFav(cardId);
     localStorage.setItem("userData", JSON.stringify(user));
     await setFavorites(cardId, user._id);
+    forceUpdate();
   };
 
   const updateLocalFav = (cardId?: string) => {
@@ -139,8 +146,8 @@ function MyCard() {
                       card={cardItem}
                       isFav={isCardFav(cardItem?._id)}
                       handleSetFavs={() => onFavCard(cardItem._id)}
-                      handleDelete={() => onDelete}
-                      handleUpdate={() => onUpdate}
+                      handleDelete={() => onDelete(cardItem._id)}
+                      handleUpdate={() => onUpdate(cardItem._id)}
                     />
                   )}
                 </div>

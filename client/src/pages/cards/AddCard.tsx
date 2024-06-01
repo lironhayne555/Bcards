@@ -59,6 +59,15 @@ function AddCard() {
     return imageUrl.substring(5);
   };
   const onSubmit = async () => {
+    cardForm.email = user?.email ? user.email : "";
+    cardForm.phone = user?.phone ? user.phone : "";
+    cardForm.country = user?.country ? user.country : "";
+    cardForm.city = user?.city ? user.city : "";
+    cardForm.street = user?.street ? user.street : "";
+    cardForm.houseNumber = user?.houseNumber ? user.houseNumber : "";
+    cardForm.zip = user?.zip ? user.zip : "";
+    console.log(cardForm);
+
     await addCards(cardForm);
     navigate("/myCards");
   };
@@ -70,7 +79,6 @@ function AddCard() {
     <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
       <CssBaseline />
       <FormLayout>
-        {" "}
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <div className="avatar-container">
             <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
@@ -164,7 +172,7 @@ function AddCard() {
                   helperText={errors.description?.message}
                 />
               </Grid>
-              <Grid item xs={6}>
+              {/* <Grid item xs={6}>
                 <TextField
                   {...register("phone", {
                     pattern: {
@@ -174,7 +182,6 @@ function AddCard() {
                     },
                     required: "phone must be require",
                   })}
-                  //InputProps={{ inputProps: { min:6, max:256 } }}
                   required
                   fullWidth
                   id="phone"
@@ -207,7 +214,7 @@ function AddCard() {
                   error={Boolean(errors.email)}
                   helperText={errors.email?.message}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={6}>
                 <TextField
                   {...register("web", {
@@ -297,7 +304,7 @@ function AddCard() {
                   helperText={errors.imageAlt?.message}
                 />
               </Grid>
-              <Grid item xs={6}>
+              {/* <Grid item xs={6}>
                 <TextField
                   {...register("country", {
                     minLength: {
@@ -425,7 +432,7 @@ function AddCard() {
                   error={Boolean(errors.zip)}
                   helperText={errors.zip?.message}
                 />
-              </Grid>
+              </Grid> */}
               <Grid item xs={12}>
                 <Button
                   fullWidth

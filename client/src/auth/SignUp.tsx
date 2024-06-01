@@ -43,53 +43,24 @@ export default function SignUp() {
     formState: { errors },
     formState,
   } = useForm<User>();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLsatName] = useState("");
-  const [email, setEmail] = useState("");
-  const [middleName, setMiddleName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageAlt, setimageAlt] = useState("");
-  const [state, setState] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [street, setStreet] = useState("");
-  const [houseNumber, setHouseNumber] = useState("");
-  const [zip, setZip] = useState("");
-  const [isBusiness, setIsBusiness] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
+  const [userForm, setUserForm] = useState({} as User);
   const cancelFunction = () => {
     navigate("/cards");
   };
   const handleCheckChange = () => {
-    setIsBusiness(!isBusiness);
+    userForm.isBusiness = !userForm.isBusiness;
   };
-  const onSubmit: SubmitHandler<User> = (data) => signUp();
-
-  function signUp() {
-    signup({
-      firstName,
-      lastName,
-      email,
-      middleName,
-      phone,
-      password,
-      imageUrl,
-      imageAlt,
-      state,
-      country,
-      city,
-      street,
-      houseNumber,
-      zip,
-      isAdmin,
-      isBusiness,
-    }).then((res) => {
+  //const onSubmit: SubmitHandler<User> = (data) => signUp();
+  const onSubmit = async () => {
+    signup(userForm).then((res) => {
       navigate("/login");
     });
-  }
+  };
+
+  const onInput = (element: any) => {
+    setUserForm({ ...userForm, [element.name]: element.value });
+  };
   return (
     <FormLayout>
       {" "}
@@ -131,7 +102,7 @@ export default function SignUp() {
                 fullWidth
                 id="firstName"
                 label="First Name"
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 autoFocus
                 error={Boolean(errors.firstName)}
                 helperText={errors.firstName?.message}
@@ -156,7 +127,7 @@ export default function SignUp() {
                 label="Middle Name"
                 name="middleName"
                 autoComplete="Middle Name"
-                onChange={(e) => setMiddleName(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.middleName)}
                 helperText={errors.middleName?.message}
               />
@@ -182,7 +153,7 @@ export default function SignUp() {
                 label="Last Name"
                 name="lastName"
                 autoComplete="family-name"
-                onChange={(e) => setLsatName(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.lastName)}
                 helperText={errors.lastName?.message}
               />
@@ -203,7 +174,7 @@ export default function SignUp() {
                 label="Phone"
                 name="phone"
                 autoComplete="Phone"
-                onChange={(e) => setPhone(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.phone)}
                 helperText={errors.phone?.message}
               />
@@ -224,7 +195,7 @@ export default function SignUp() {
                 label="Email"
                 name="email"
                 autoComplete="email"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.email)}
                 helperText={errors.email?.message}
               />
@@ -248,7 +219,7 @@ export default function SignUp() {
                 type="password"
                 id="password"
                 autoComplete="new-password"
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.password)}
                 helperText={errors.password?.message}
               />
@@ -261,7 +232,7 @@ export default function SignUp() {
                 fullWidth
                 id="imageUrl"
                 label="Image Url"
-                onChange={(e) => setImageUrl(e.target.value)}
+                onChange={(e) => onInput(e.target)}
               />
             </Grid>
             <Grid item xs={6}>
@@ -283,7 +254,7 @@ export default function SignUp() {
                 type="imageAlt"
                 id="imageAlt"
                 autoComplete="image-Alt"
-                onChange={(e) => setimageAlt(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.imageAlt)}
                 helperText={errors.imageAlt?.message}
               />
@@ -305,7 +276,7 @@ export default function SignUp() {
                 label="State"
                 name="state"
                 autoComplete="state"
-                onChange={(e) => setState(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.state)}
                 helperText={errors.state?.message}
               />
@@ -331,7 +302,7 @@ export default function SignUp() {
                 type="country"
                 id="country"
                 autoComplete="country"
-                onChange={(e) => setCountry(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.country)}
                 helperText={errors.country?.message}
               />
@@ -357,7 +328,7 @@ export default function SignUp() {
                 type="street"
                 id="street"
                 autoComplete="street"
-                onChange={(e) => setStreet(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.street)}
                 helperText={errors.street?.message}
               />
@@ -381,7 +352,7 @@ export default function SignUp() {
                 label="City"
                 name="city"
                 autoComplete="city"
-                onChange={(e) => setCity(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.city)}
                 helperText={errors.city?.message}
               />
@@ -398,7 +369,7 @@ export default function SignUp() {
                 type="houseNumber"
                 id="houseNumber"
                 autoComplete="house-Number"
-                onChange={(e) => setHouseNumber(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.houseNumber)}
                 helperText={errors.houseNumber?.message}
               />
@@ -422,7 +393,7 @@ export default function SignUp() {
                 type="zip"
                 id="zip"
                 autoComplete="zip"
-                onChange={(e) => setZip(e.target.value)}
+                onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.zip)}
                 helperText={errors.zip?.message}
               />
