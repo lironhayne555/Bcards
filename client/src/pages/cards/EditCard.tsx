@@ -158,43 +158,24 @@ function EditCard() {
                 />
               </Grid>
               <Grid item xs={12}>
-                <input
-                  style={{ display: "none" }}
-                  id="upload-photo"
-                  name="upload-photo"
-                  type="file"
-                  onChange={handleFileChange}
-                />
-                <label htmlFor="upload-photo">
-                  <Fab
-                    color="primary"
-                    size="small"
-                    component="span"
-                    aria-label="add"
-                    variant="extended"
-                  >
-                    Upload
-                  </Fab>
-                </label>
                 <TextField
+                  onInput={(ev) => onInput(ev.target)}
+                  name="imageUrl"
                   label={cardForm.imageUrl ? "" : "Image URL"}
                   fullWidth
                   value={cardForm.imageUrl || ""}
-                  disabled
                 />
               </Grid>
               <Grid item xs={12}>
                 {cardForm.imageUrl && (
                   <img
-                    src={`blob:${cardForm.imageUrl}`}
+                    src={`${cardForm.imageUrl}`}
                     alt="Uploaded"
                     style={{ maxWidth: "100%" }}
                   />
                 )}
               </Grid>
-              <Grid item xs={12}>
-                <Button onClick={clearImage}>Clear Image</Button>
-              </Grid>
+
               <Grid item xs={12}>
                 <Button
                   fullWidth

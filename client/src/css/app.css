@@ -1,0 +1,12 @@
+.dark input {
+  border-radius: 6px;
+  background-color: white;
+}
+
+.dark input::placeholder {
+  color: black;
+}
+
+.dark .css-1iz4iln {
+  filter: invert(1);
+}

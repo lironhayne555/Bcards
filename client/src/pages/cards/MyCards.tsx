@@ -18,11 +18,14 @@ import { deleteCard, getMyCards } from "../../services/CardServices";
 import { setFavorites } from "../../services/ApiServices";
 import { setUser as setLocalStorgaeUser } from "../../auth/TokenManager";
 import { User } from "../../auth/SignUp";
+import ConfirmDialog from "../../components/ConfirmDialog";
 function MyCard() {
   const [myCards, setMyCards] = useState<Array<FullCard>>([]);
-  const { searchValue } = useContext(SearchContext);
+  const { searchValue, setSearchValue } = useContext(SearchContext);
   const navigate = useNavigate();
   const { user, setUser } = useAuth();
+  const [filteredCards, setFilteredCards] = useState<Array<FullCard>>([]);
+  const [isDeleteDialog, setIsDeleteDialog] = useState("");
   const [favorites, setLocalFavorites] = useState(user?.favorites);
   const [loading, setLoading] = useState(true);
   const cardsRef = useRef(myCards);
@@ -54,6 +57,7 @@ function MyCard() {
       if (user && !myCards.length) {
         const cards = await getMyCards(user._id || "");
         const cardsWithDetails = attachUserDetails(cards, user);
+        setFilteredCards(cardsWithDetails);
         setMyCards(cardsWithDetails);
         //cardsRef.current = cardsWithDetails;
       }
@@ -61,25 +65,12 @@ function MyCard() {
       console.error("Error fetching cards:", error);
     }
   };
+  const onCloseDeleteDialog = () => {
+    setIsDeleteDialog("");
+  };
   async function onDelete(_id?: string) {
-    if (window.confirm(`Are you sure to delete ${_id}?`)) {
-      try {
-        if (_id) {
-          await deleteCard(_id);
-          const updated = cardsRef.current.filter(
-            (card: Card) => card._id !== _id
-          );
-          console.log(updated);
-          cardsRef.current = updated;
-          setMyCards(updated);
-          forceUpdate();
-          toast.success("Card has been deleted.");
-        } else {
-          toast.error("No Card to delete");
-        }
-      } catch (error) {
-        toast.error("Failed to delete card.");
-      }
+    if (_id) {
+      setIsDeleteDialog(_id);
     }
   }
 
@@ -94,12 +85,16 @@ function MyCard() {
     if (!myCards.length) {
       fetchCards();
     }
-  }, []);
+  }, [user]);
+
   useEffect(() => {
     fetchCards();
+    setFilteredCards(myCards);
+    setSearchValue("");
   }, [myCards]);
   useEffect(() => {
-    fetchCards();
+    // fetchCards();
+
     if (searchValue.trim() !== "") {
       const filtered = myCards.filter(
         (item) =>
@@ -107,11 +102,11 @@ function MyCard() {
           item.description?.toLowerCase().includes(searchValue.toLowerCase())
       );
       //cardsRef.current = filtered;
-      setMyCards(filtered);
+      setFilteredCards(filtered);
     } else {
-      fetchCards();
+      setFilteredCards(myCards);
     }
-  }, [searchValue, myCards]);
+  }, [searchValue]);
   let length = myCards.length === 0;
   function handleClick() {
     navigate("/addCard");
@@ -152,12 +147,36 @@ function MyCard() {
 
   const isCardFav = (cardId?: string) => {
     if (!cardId || !favorites) return false;
-    console.log(favorites.includes(cardId));
 
     return favorites.includes(cardId);
   };
+  const onDeleteConfirmed = async () => {
+    try {
+      if (isDeleteDialog) {
+        await deleteCard(isDeleteDialog);
+        const updated = cardsRef.current.filter(
+          (card: Card) => card._id !== isDeleteDialog
+        );
+        cardsRef.current = updated;
+        setMyCards(updated);
+        setIsDeleteDialog("");
+        forceUpdate();
+        toast.success("Card has been deleted.");
+      } else {
+        toast.error("No Card to delete");
+      }
+    } catch (error) {
+      toast.error("Failed to delete card.");
+    }
+  };
   return (
     <>
+      <ConfirmDialog
+        onConfirm={onDeleteConfirmed}
+        title="Would you like to delete the card?"
+        onClose={onCloseDeleteDialog}
+        isOpen={!!isDeleteDialog}
+      />
       <Container component="main" maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         <CssBaseline />
         <Title
@@ -171,11 +190,11 @@ function MyCard() {
             </Avatar>
           </Button>
         </div>
-        {myCards.length === 0 ? (
+        {filteredCards.length === 0 ? (
           <span className="text-center">You don't have cards yet</span>
         ) : (
           <Grid justifyContent={"center"} container gridTemplateColumns={3}>
-            {myCards.map((cardItem) => (
+            {filteredCards.map((cardItem) => (
               <Grid item key={cardItem._id}>
                 <div className="card-wrapper">
                   <RecipeReviewCard

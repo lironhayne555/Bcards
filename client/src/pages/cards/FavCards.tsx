@@ -102,20 +102,16 @@ function FavCards() {
 
   const updateLocalFav = (cardId?: string) => {
     if (!cardId || !user?._id || !favorites || !user?.favorites) return;
-    const favoriteIndex = favorites.findIndex((fav) => {
-      return fav === cardId;
+    const favoriteIndex = favsCards.findIndex((fav) => {
+      return fav._id === cardId;
     });
 
     if (favoriteIndex !== -1) {
-      const updatedFavorites = favorites.filter(
-        (fav) => fav !== favorites[favoriteIndex]
-      );
-      setLocalFavorites([...updatedFavorites]);
-    } else {
-      const updatedFavorites = [...favorites, cardId];
-
-      setLocalFavorites([...updatedFavorites]);
-      //setFavsCards(updatedFavorites);
+      const updatedFavorites = favsCards.filter((fav) => fav._id !== cardId);
+      user.favorites = updatedFavorites.map((fav) => fav._id || "");
+      setLocalStorgaeUser(user);
+      setUser(user);
+      setFavsCards([...updatedFavorites]);
     }
   };
 

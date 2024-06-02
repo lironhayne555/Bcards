@@ -25,7 +25,7 @@ export const AppContextProvider = ({
 }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  let logoutTimerIdRef = useRef(0);
+  let logoutTimerIdRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     const theUser = getUser();
@@ -33,34 +33,22 @@ export const AppContextProvider = ({
     if (theUser) {
       setUser(theUser);
     }
-    // else {
-    //   window.location.href = "/login";
-    // }
   }, []);
-
   useEffect(() => {
-    console.log("here");
-
-    const autoLogout = () => {
-      if (document.visibilityState === "hidden") {
-        const timeOutId = window.setTimeout(() => {
-          removeUser();
-          setUser(null);
-        }, 24 * 60 * 60 * 1000);
-        logoutTimerIdRef.current = timeOutId;
-      } else {
-        window.clearTimeout(logoutTimerIdRef.current);
+    const timeout = setTimeout(() => {
+      if (user) {
+        removeUser();
+        setUser(null);
+        window.location.href = "/login";
       }
-    };
+      clearTimeout(timeout);
+    }, 14400000);
+
     const storedUser = localStorage.getItem("user");
     if (storedUser && !logoutTimerIdRef.current) {
       setUser(JSON.parse(storedUser));
     }
-    document.addEventListener("visibilitychange", autoLogout);
-    return () => {
-      document.removeEventListener("visibilitychange", autoLogout);
-    };
-  }, []);
+  }, [user]);
 
   return (
     <AppContext.Provider value={{ user, setUser }}>

@@ -20,6 +20,7 @@ import { SearchContext } from "../searchContext";
 import { Link } from "react-router-dom";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { CssBaseline, Menu, MenuItem } from "@mui/material";
+import { toggleDarkMode } from "../services/AppService";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -61,13 +62,14 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
-
-function Navbar() {
+interface NavBarProps {
+  onToggleDark: (mode: string) => void;
+}
+function Navbar({ onToggleDark }: NavBarProps) {
   const { user } = useAuth();
   const { searchValue, setSearchValue } = React.useContext(SearchContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mode, setMode] = useState<"light" | "dark">("light");
-
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -100,6 +102,7 @@ function Navbar() {
 
   function handleClick() {
     const toggleMode = mode === "dark" ? "light" : "dark";
+    onToggleDark(toggleMode);
     setMode(toggleMode);
   }
 

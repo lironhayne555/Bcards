@@ -80,7 +80,7 @@ module.exports = {
         street: user.street,
         houseNumber: user.houseNumber,
         zip: user.zip ? user.zip : "",
-        middleName: user.middleName ? user.middleName : ""
+        middleName: user.middleName ? user.middleName : "",
       });
     } catch (err) {
       console.log(err);
@@ -90,18 +90,17 @@ module.exports = {
   getUserFavoriteCards: async function (req, res, next) {
     try {
       const _id = req.params._id;
-       if (!_id) {
+      if (!_id) {
         return res.status(404).json({ message: "User not found" });
+      } else {
+        const user = await User.findById(_id);
+        const idsCards = await user.favorites;
+        const favoriteCards = await Card.find({
+          _id: { $in: idsCards },
+        }).exec();
+        console.log("Favorite Cards:", favoriteCards);
+        return res.status(200).json(favoriteCards);
       }
-else{
-    const user = await User.findById(_id);
-     const idsCards = await user.favorites
-    const favoriteCards = await Card.find({ _id: { $in: idsCards } }).exec();
-       console.log('Favorite Cards:', favoriteCards);
-      return res.status(200).json(favoriteCards);
-}
-
-      
     } catch (err) {
       console.log(err);
       res.status(500).json({
@@ -164,7 +163,7 @@ else{
         zip: value.zip,
         isAdmin: value.isAdmin,
         isBusiness: value.isBusiness,
-        favorites:value.favorites
+        favorites: value.favorites,
       });
 
       await newUser.save();
@@ -255,13 +254,13 @@ else{
       res.status(400).json({ error: "fail to update data" });
     }
   },
-getUserDetails : async function (req, res, next) {
+  getUserDetails: async function (req, res, next) {
     try {
-      const _id = req.body().userId; 
+      const _id = req.body().userId;
       const result = await User.findById(userId);
- if (!result) {
-      return res.status(404).json({ error: "User not found" });
-    }
+      if (!result) {
+        return res.status(404).json({ error: "User not found" });
+      }
       res.json(result);
     } catch (err) {
       console.log(err);
