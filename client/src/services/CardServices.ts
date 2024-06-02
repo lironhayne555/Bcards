@@ -1,12 +1,12 @@
 import { toast } from "react-toastify";
 import { User } from "../auth/SignUp";
 import { getToken } from "../auth/TokenManager";
-import { AddCardForm, Card } from "../components/RecipeReviewCard";
+import {  Card, FullCard } from "../components/RecipeReviewCard";
 
 const serverUrl = "http://localhost:8080/";
 const cardsUrl = `${serverUrl}cards/`;
 
-export async function addCards(cardForm: AddCardForm): Promise<Card> {
+export async function addCards(cardForm: Card): Promise<Card> {
   const res = await fetch(`${cardsUrl}`, {
     method: "POST",
     headers: {
@@ -23,19 +23,7 @@ export async function addCards(cardForm: AddCardForm): Promise<Card> {
   return res.json();
 }
 
-export async function editCards(cardForm: AddCardForm): Promise<Card> {
-  // let editForm = new FormData();
-  // for (const key in editForm) {
-  //   if (key === "imageFile" && cardForm.imageFile) {
-  //     editForm.append(
-  //       "imageFile",
-  //       cardForm.imageFile,
-  //       cardForm.imageFile.name || "default-name"
-  //     );
-  //   } else {
-  //     editForm.append(key, (cardForm as any)[key]);
-  //   }
-  // }
+export async function editCards(cardForm: Card): Promise<Card> {
   console.log(cardForm);
 
   const res = await fetch(`${cardsUrl}`, {
@@ -52,7 +40,7 @@ export async function editCards(cardForm: AddCardForm): Promise<Card> {
   }
   return res.json();
 }
-export async function getCards(): Promise<Array<Card>> {
+export async function getCards(): Promise<Array<FullCard>> {
   const res = await fetch(`${cardsUrl}`);
   return res.json();
 }
@@ -80,7 +68,7 @@ export async function deleteCard(_id: string): Promise<Card> {
   return res.json();
 }
 
-export async function getCardById(_id: string): Promise<Card> {
+export async function getCardById(_id: string): Promise<FullCard> {
   const res = await fetch(`${cardsUrl}${_id}`, {
     method: "GET",
     headers: {
@@ -89,7 +77,7 @@ export async function getCardById(_id: string): Promise<Card> {
   });
   return res.json();
 }
-export async function getMyCards(_id: string): Promise<Array<Card>> {
+export async function getMyCards(_id: string): Promise<Array<FullCard>> {
   const res = await fetch(`${cardsUrl}${_id}/myCards`, {
     method: "GET",
     headers: {

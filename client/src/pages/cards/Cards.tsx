@@ -1,20 +1,25 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, RecipeReviewCard } from "../../components/RecipeReviewCard";
+import {
+  Card,
+  FullCard,
+  RecipeReviewCard,
+} from "../../components/RecipeReviewCard";
 import Title from "../../components/Title";
 import { getCards, getCardsByUser } from "../../services/CardServices";
-import { Avatar, Button, Container, CssBaseline } from "@mui/material";
+import { Avatar, Button, Container, CssBaseline, Grid } from "@mui/material";
 import { SearchContext } from "../../searchContext";
 import { useAuth } from "../../AppContext";
 import "../../css/CardsPage.css";
 import { useForceUpdate } from "../../components/useForceUpdate";
-import { setFavorites } from "../../services/ApiServices";
+import { getUserDetails, setFavorites } from "../../services/ApiServices";
 import { toast } from "react-toastify";
+import { setUser as setLocalStorgaeUser } from "../../auth/TokenManager";
 
 function Cards() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const navigate = useNavigate();
-  const [cards, setCards] = useState<Array<Card>>([]);
+  const [cards, setCards] = useState<Array<FullCard>>([]);
   const [favorites, setLocalFavorites] = useState(user?.favorites);
   const { searchValue } = useContext(SearchContext);
   const [loading, setLoading] = useState(true);
@@ -24,11 +29,44 @@ function Cards() {
     try {
       if (user && !cards.length) {
         const cards = await getCards();
-        setCards(cards);
-        cardsRef.current = cards;
+        const cardsWithUserDetails = await Promise.all(
+          cards.map(async (card) => {
+            if (user._id === card.userId) {
+              return {
+                ...card,
+                user: {
+                  email: user.email,
+                  phone: user.phone,
+                  country: user.country,
+                  city: user.city,
+                  street: user.street,
+                  houseNumber: user.houseNumber,
+                  zip: user.zip,
+                },
+              };
+            } else {
+              const userCard = await getUserDetails(card.userId);
+              return {
+                ...card,
+                user: {
+                  email: userCard.email,
+                  phone: userCard.phone,
+                  country: userCard.country,
+                  city: userCard.city,
+                  street: userCard.street,
+                  houseNumber: userCard.houseNumber,
+                  zip: userCard.zip,
+                },
+              };
+            }
+          })
+        );
+        console.log(cardsWithUserDetails);
+
+        setCards(cardsWithUserDetails);
       }
     } catch (error) {
-      console.error("Error fetching cards:", error);
+      console.log(error);
     }
   };
 
@@ -36,7 +74,7 @@ function Cards() {
     if (!cards.length) {
       fetchCards();
     }
-  }, []);
+  }, [cards]);
   useEffect(() => {
     if (searchValue.trim() !== "") {
       const filtered = cards.filter(
@@ -50,41 +88,51 @@ function Cards() {
     }
   }, [searchValue, cards]);
 
+  useEffect(() => {
+    if (user) {
+      setUser({ ...user, favorites });
+      setLocalStorgaeUser({ ...user, favorites });
+    }
+  }, [favorites]);
+
   const onFavCard = async (cardId?: string) => {
     if (!cardId || !user?._id || !user.favorites) return;
     updateLocalFav(cardId);
-    // localStorage.setItem("userData", JSON.stringify(user));
-    await setFavorites(cardId, user._id)
-      .then(() => {
-        localStorage.setItem("userDate", JSON.stringify(user));
-        forceUpdate();
-      })
-      .catch(() => {
-        toast.error("error Update Favorite");
-      });
+
+    await setFavorites(cardId, user._id);
+    //forceUpdate();
   };
 
   const updateLocalFav = (cardId?: string) => {
     if (!cardId || !user?._id || !favorites || !user?.favorites) return;
-    const favoriteIndex = favorites.findIndex((fav) => fav === cardId);
+    const favoriteIndex = favorites.findIndex((fav) => {
+      return fav === cardId;
+    });
 
     if (favoriteIndex !== -1) {
-      const updatedFavorites = user?.favorites.splice(favoriteIndex, 1);
-
+      const updatedFavorites = favorites.filter(
+        (fav) => fav !== favorites[favoriteIndex]
+      );
       setLocalFavorites([...updatedFavorites]);
     } else {
-      setLocalFavorites([...favorites, cardId]);
+      const updatedFavorites = [...favorites, cardId];
+
+      setLocalFavorites([...updatedFavorites]);
+      //setFavsCards(updatedFavorites);
     }
+  };
+
+  const isCardFav = (cardId?: string) => {
+    if (!cardId || !favorites) return false;
+    console.log(favorites.includes(cardId));
+
+    return favorites.includes(cardId);
   };
   const handleDelete = () => {
     return;
   };
   const handleUpdate = () => {
     return;
-  };
-  const isCardFav = (cardId?: string) => {
-    if (!cardId || !favorites) return false;
-    return favorites.includes(cardId);
   };
   return (
     <>
@@ -94,19 +142,32 @@ function Cards() {
           mainText="Cards"
           subText="Here you can find business cards from all categories"
         ></Title>
-        {cards &&
-          cards.map((cardItem) => (
-            <RecipeReviewCard
-              key={cardItem._id}
-              card={cardItem}
-              isFav={isCardFav(cardItem?._id)}
-              handleDelete={() => handleDelete()}
-              handleSetFavs={() => onFavCard(cardItem._id)}
-              handleUpdate={() => handleUpdate()}
-            />
-          ))}
+        {cards.length === 0 ? (
+          <span className="text-center">You don't have cards yet</span>
+        ) : (
+          <Grid justifyContent={"center"} container gridTemplateColumns={3}>
+            {cards.map((cardItem) => (
+              <Grid item key={cardItem._id}>
+                <div className="card-wrapper" key={cardItem._id}>
+                  <RecipeReviewCard
+                    card={cardItem}
+                    isFav={isCardFav(cardItem?._id)}
+                    handleDelete={() => {
+                      handleDelete();
+                    }}
+                    handleUpdate={() => {
+                      handleUpdate();
+                    }}
+                    handleSetFavs={() => onFavCard(cardItem._id)}
+                  />
+                </div>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Container>
     </>
   );
 }
+
 export default Cards;

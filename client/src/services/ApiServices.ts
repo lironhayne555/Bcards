@@ -1,7 +1,7 @@
 import { error, log } from "console";
 import { User } from "../auth/SignUp";
 import { getToken } from "../auth/TokenManager";
-import { Card } from "../components/RecipeReviewCard";
+import { Card, FullCard } from "../components/RecipeReviewCard";
 import { json } from "stream/consumers";
 import { RssFeed } from "@mui/icons-material";
 import { toast } from "react-toastify";
@@ -49,7 +49,7 @@ export async function signin(userForm: User): Promise<User> {
   return res.json();
 }
 
-export async function getFavorites(_id: string): Promise<Array<Card>> {
+export async function getFavorites(_id: string): Promise<Array<FullCard>> {
   const res = await fetch(`${usersUrl}${_id}/favs`, {
     method: "GET",
     headers: {
@@ -61,6 +61,16 @@ export async function getFavorites(_id: string): Promise<Array<Card>> {
 
 export async function getUsers(): Promise<Array<User>> {
   const res = await fetch(`${usersUrl}`);
+  return res.json();
+}
+export async function getUserDetails(userId:string):Promise<User> {
+   const res = await fetch(`${usersUrl}`,{
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(userId)
+});
   return res.json();
 }
 export async function editUserFunction(_id: string, user: User): Promise<User> {

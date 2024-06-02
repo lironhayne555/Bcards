@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../AppContext";
 import FormLayout from "../../components/FormLayout";
-import { AddCardForm, Card } from "../../components/RecipeReviewCard";
+import { Card } from "../../components/RecipeReviewCard";
 import { editCards, getCardById } from "../../services/CardServices";
 function EditCard() {
   const { _id } = useParams();
@@ -20,7 +20,7 @@ function EditCard() {
     handleSubmit,
     formState: { errors },
   } = useForm<Card>();
-  const [cardForm, setCardForm] = useState({} as AddCardForm);
+  const [cardForm, setCardForm] = useState({} as Card);
   const navigate = useNavigate();
   const { user } = useAuth();
   useEffect(() => {
@@ -44,7 +44,6 @@ function EditCard() {
     }
   };
   const clearImage = () => {
-    cardForm.imageFile = null;
     cardForm.imageUrl = "";
   };
   // const removeBlob = (imageUrl: string) => {
@@ -158,75 +157,6 @@ function EditCard() {
                   }
                 />
               </Grid>
-              {/* <Grid item xs={6}>
-                <TextField
-                  {...register("phone", {
-                    pattern: {
-                      value:
-                        /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
-                      message: "phone must be a valid phone number",
-                    },
-                  })}
-                  required
-                  fullWidth
-                  id="phone"
-                  value={cardForm.phone || ""}
-                  name="phone"
-                  label="Phone"
-                  autoComplete="Phone"
-                  onChange={(e) => onInput(e.target)}
-                  error={Boolean(errors.phone)}
-                  helperText={errors.phone ? errors.phone.message : ""}
-                />
-              </Grid>
-              <Grid item md={6}>
-                <TextField
-                  {...register("email", {
-                    pattern: {
-                      value:
-                        /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/,
-                      message: "user mail must be a valid mail",
-                    },
-                  })}
-                  required
-                  fullWidth
-                  id="email"
-                  value={cardForm.email || ""}
-                  name="email"
-                  label="Email"
-                  autoComplete="email"
-                  InputProps={{ inputProps: { min: 6, max: 256 } }}
-                  onChange={(e) => onInput(e.target)}
-                  error={Boolean(errors.email)}
-                  helperText={errors.email ? errors.email.message : ""}
-                />
-              </Grid> */}
-              <Grid item xs={6}>
-                <TextField
-                  {...register("web", {
-                    minLength: {
-                      value: 2,
-                      message: "web length must be at least 2 characters long",
-                    },
-                    maxLength: {
-                      value: 1024,
-                      message: "web length must be maxium 1024 long",
-                    },
-                  })}
-                  fullWidth
-                  name="web"
-                  label="web"
-                  value={cardForm.web || ""}
-                  type="web"
-                  id="web"
-                  InputProps={{ inputProps: { min: 2, max: 1024 } }}
-                  autoComplete="Website"
-                  onChange={(e) => onInput(e.target)}
-                  error={Boolean(errors.web)}
-                  helperText={errors.web ? errors.web.message : ""}
-                />
-              </Grid>
-
               <Grid item xs={12}>
                 <input
                   style={{ display: "none" }}
@@ -265,161 +195,6 @@ function EditCard() {
               <Grid item xs={12}>
                 <Button onClick={clearImage}>Clear Image</Button>
               </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  fullWidth
-                  {...register("imageAlt", {
-                    minLength: {
-                      value: 6,
-                      message:
-                        "Image alt length must be at least 6 characters long",
-                    },
-                    maxLength: {
-                      value: 1024,
-                      message: "Image Alt length must be maxium 1024 long",
-                    },
-                  })}
-                  name="imageAlt"
-                  label="Image Alt"
-                  type="imageAlt"
-                  id="imageAlt"
-                  InputProps={{ inputProps: { min: 6, max: 1024 } }}
-                  value={cardForm.imageAlt || ""}
-                  autoComplete="image-Alt"
-                  onChange={(e) => onInput(e.target)}
-                  error={Boolean(errors.imageAlt)}
-                  helperText={errors.imageAlt ? errors.imageAlt.message : ""}
-                />
-              </Grid>
-              {/* <Grid item xs={6}>
-                <TextField
-                  {...register("country", {
-                    minLength: {
-                      value: 2,
-                      message:
-                        "country length must be at least 2 characters long",
-                    },
-                    maxLength: {
-                      value: 256,
-                      message: "country length must be maxium 256 long",
-                    },
-                  })}
-                  required
-                  fullWidth
-                  name="country"
-                  label="Country"
-                  type="country"
-                  id="country"
-                  InputProps={{ inputProps: { min: 2, max: 256 } }}
-                  value={cardForm.country || ""}
-                  autoComplete="country"
-                  onChange={(e) => onInput(e.target.value)}
-                  error={Boolean(errors.country)}
-                  helperText={errors.country ? errors.country.message : ""}
-                />
-              </Grid>
-
-              <Grid item xs={6}>
-                <TextField
-                  {...register("street", {
-                    minLength: {
-                      value: 2,
-                      message:
-                        "street length must be at least 2 characters long",
-                    },
-                    maxLength: {
-                      value: 256,
-                      message: "street length must be maxium 256 long",
-                    },
-                  })}
-                  required
-                  fullWidth
-                  name="street"
-                  label="Street"
-                  value={cardForm.street || ""}
-                  type="street"
-                  InputProps={{ inputProps: { min: 2, max: 256 } }}
-                  id="street"
-                  autoComplete="street"
-                  onChange={(e) => onInput(e.target)}
-                  error={Boolean(errors.street)}
-                  helperText={errors.street ? errors.street.message : ""}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  {...register("city", {
-                    minLength: {
-                      value: 2,
-                      message: "city length must be at least 2 characters long",
-                    },
-                    maxLength: {
-                      value: 256,
-                      message: "city length must be maxium 256 long",
-                    },
-                  })}
-                  required
-                  fullWidth
-                  id="city"
-                  label="City"
-                  name="city"
-                  InputProps={{ inputProps: { min: 2, max: 256 } }}
-                  value={cardForm.city || ""}
-                  autoComplete="city"
-                  onChange={(e) => onInput(e.target)}
-                  error={Boolean(errors.city)}
-                  helperText={errors.city ? errors.city.message : ""}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  {...register("houseNumber", {
-                    pattern: {
-                      value: /[0-9]{0,3}/,
-                      message:
-                        "house number must be a number with max 3 digits",
-                    },
-                  })}
-                  fullWidth
-                  value={cardForm.houseNumber || ""}
-                  name="houseNumber"
-                  label="House Number"
-                  type="houseNumber"
-                  id="houseNumber"
-                  autoComplete="house-Number"
-                  onChange={(e) => onInput(e.target)}
-                  InputProps={{ inputProps: { max: 3 } }}
-                  error={Boolean(errors.houseNumber)}
-                  helperText={
-                    errors.houseNumber ? errors.houseNumber.message : ""
-                  }
-                />
-              </Grid>
-
-              <Grid item xs={6}>
-                <TextField
-                  {...register("zip", {
-                    minLength: {
-                      value: 5,
-                      message: "city length must be at least 5 characters long",
-                    },
-                    maxLength: {
-                      value: 50,
-                      message: "zip length must be maxium 50 long",
-                    },
-                  })}
-                  fullWidth
-                  name="zip"
-                  label="Zip"
-                  InputProps={{ inputProps: { min: 5, max: 50 } }}
-                  id="zip"
-                  value={cardForm.zip || ""}
-                  autoComplete="zip"
-                  onChange={(e) => onInput(e.target)}
-                  error={Boolean(errors.zip)}
-                  helperText={errors.zip ? errors.zip.message : ""}
-                />
-              </Grid> */}
               <Grid item xs={12}>
                 <Button
                   fullWidth

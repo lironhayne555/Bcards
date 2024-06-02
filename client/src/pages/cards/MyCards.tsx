@@ -4,7 +4,11 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../../AppContext";
-import { Card, RecipeReviewCard } from "../../components/RecipeReviewCard";
+import {
+  Card,
+  FullCard,
+  RecipeReviewCard,
+} from "../../components/RecipeReviewCard";
 import SkeletonCard from "../../components/Skelton";
 import Title from "../../components/Title";
 import { useForceUpdate } from "../../components/useForceUpdate";
@@ -13,14 +17,13 @@ import { SearchContext } from "../../searchContext";
 import { deleteCard, getMyCards } from "../../services/CardServices";
 import { setFavorites } from "../../services/ApiServices";
 import { setUser as setLocalStorgaeUser } from "../../auth/TokenManager";
+import { User } from "../../auth/SignUp";
 function MyCard() {
-  const [myCards, setMyCards] = useState<Array<Card>>([]);
+  const [myCards, setMyCards] = useState<Array<FullCard>>([]);
   const { searchValue } = useContext(SearchContext);
   const navigate = useNavigate();
   const { user, setUser } = useAuth();
-
   const [favorites, setLocalFavorites] = useState(user?.favorites);
-
   const [loading, setLoading] = useState(true);
   const cardsRef = useRef(myCards);
   const forceUpdate = useForceUpdate();
@@ -30,28 +33,29 @@ function MyCard() {
     }, 1200);
     return () => clearTimeout(timer);
   }, []);
-  const attachUserDetails = (cards: Card[]) => {
-    if (!user) return cards;
+  const attachUserDetails = (cards: FullCard[], user: User) => {
+    if (!user) return cards as FullCard[];
     return cards.map((card) => {
       return {
         ...card,
-        phone: user.phone || "",
-        country: user.country || "",
-        city: user.city || "",
-        street: user.street || "",
-        houseNumber: user.houseNumber || 0,
-        zip: user.zip || "",
-      };
+        user: {
+          phone: user.phone || "",
+          country: user.country || "",
+          city: user.city || "",
+          street: user.street || "",
+          houseNumber: user.houseNumber || 0,
+          zip: user.zip || "",
+        },
+      } as FullCard;
     });
   };
   const fetchCards = async () => {
     try {
-      if (user) {
+      if (user && !myCards.length) {
         const cards = await getMyCards(user._id || "");
-        // cards.forEach((card) => updateLocalFav(card._id));
-        const cardsWithDetails = attachUserDetails(cards);
-
+        const cardsWithDetails = attachUserDetails(cards, user);
         setMyCards(cardsWithDetails);
+        //cardsRef.current = cardsWithDetails;
       }
     } catch (error) {
       console.error("Error fetching cards:", error);
@@ -67,6 +71,7 @@ function MyCard() {
           );
           console.log(updated);
           cardsRef.current = updated;
+          setMyCards(updated);
           forceUpdate();
           toast.success("Card has been deleted.");
         } else {
@@ -86,8 +91,13 @@ function MyCard() {
     }
   }
   useEffect(() => {
+    if (!myCards.length) {
+      fetchCards();
+    }
+  }, []);
+  useEffect(() => {
     fetchCards();
-  }, [cardsRef.current]);
+  }, [myCards]);
   useEffect(() => {
     fetchCards();
     if (searchValue.trim() !== "") {
@@ -96,11 +106,12 @@ function MyCard() {
           item.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
           item.description?.toLowerCase().includes(searchValue.toLowerCase())
       );
-      cardsRef.current = filtered;
+      //cardsRef.current = filtered;
+      setMyCards(filtered);
     } else {
       fetchCards();
     }
-  }, [searchValue, cardsRef.current]);
+  }, [searchValue, myCards]);
   let length = myCards.length === 0;
   function handleClick() {
     navigate("/addCard");
@@ -118,7 +129,7 @@ function MyCard() {
     updateLocalFav(cardId);
 
     await setFavorites(cardId, user._id);
-    forceUpdate();
+    //forceUpdate();
   };
 
   const updateLocalFav = (cardId?: string) => {
@@ -167,17 +178,14 @@ function MyCard() {
             {myCards.map((cardItem) => (
               <Grid item key={cardItem._id}>
                 <div className="card-wrapper">
-                  {loading ? (
-                    <SkeletonCard />
-                  ) : (
-                    <RecipeReviewCard
-                      card={cardItem}
-                      isFav={isCardFav(cardItem?._id)}
-                      handleSetFavs={() => onFavCard(cardItem._id)}
-                      handleDelete={() => onDelete(cardItem._id)}
-                      handleUpdate={() => onUpdate(cardItem._id)}
-                    />
-                  )}
+                  <RecipeReviewCard
+                    card={cardItem}
+                    isFav={isCardFav(cardItem?._id)}
+                    handleSetFavs={() => onFavCard(cardItem._id)}
+                    handleDelete={() => onDelete(cardItem._id)}
+                    handleUpdate={() => onUpdate(cardItem._id)}
+                  />
+                  {/* )} */}
                 </div>
               </Grid>
             ))}

@@ -15,9 +15,9 @@ import { useAuth } from "../AppContext";
 import { verifyToken } from "../auth/TokenManager";
 import { useForceUpdate } from "./useForceUpdate";
 import { getCardById } from "../services/CardServices";
-export interface AddCardForm extends Card {
-  userId: string;
-  imageFile?: File | null;
+import { User } from "../auth/SignUp";
+export interface FullCard extends Card {
+  user: User;
 }
 export interface Card {
   __v?: number;
@@ -25,24 +25,8 @@ export interface Card {
   title: string;
   subtitle: string;
   description: string;
-  phone: string;
-  email: string;
-  web: string;
   imageUrl?: any;
-  imageAlt: string;
-  state: string;
-  country: string;
-  city: string;
-  street: string;
-  houseNumber: number | string;
-  zip: string;
-  userId: string | null;
-  formData?: FormData | null;
-  handleDelete: Function;
-  handleUpdate: Function;
-  isRedHeart: boolean;
-  setIsRedHeart: Function;
-  handleSetFavs: Function;
+  userId: string;
 }
 
 interface ExpandMoreProps extends IconButtonProps {
@@ -61,7 +45,7 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
 }));
 
 interface RecipeReviewCardProps {
-  card: Card;
+  card: FullCard;
   isFav?: boolean;
   handleUpdate: Function;
   handleDelete: Function;
@@ -131,7 +115,6 @@ export const RecipeReviewCard = ({
           component="img"
           height="194"
           src={card.imageUrl}
-          alt={card.imageAlt ? card.imageAlt : "Uploaded Image"}
           sx={{ objectFit: "cover", height: "200px", maxWidth: "100%" }}
         />
       ) : (
@@ -152,9 +135,10 @@ export const RecipeReviewCard = ({
           {card.subtitle}
         </Typography>
         <br></br>
-        <Typography component="div">Phone: {card.phone}</Typography>
+        <Typography component="div">Phone: {card.user.phone}</Typography>
         <Typography component="div">
-          Address: {card.street} {card.houseNumber}, {card.city} ,{card.country}
+          Address: {card.user.street} {card.user.houseNumber}, {card.user.city},
+          {card.user.country}
         </Typography>
       </CardContent>
 

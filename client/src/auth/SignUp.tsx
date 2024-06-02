@@ -29,7 +29,7 @@ export interface User {
   country?: string;
   city?: string;
   street?: string;
-  houseNumber?: number | string;
+  houseNumber: number;
   zip?: string;
   isAdmin?: boolean;
   isBusiness?: boolean;

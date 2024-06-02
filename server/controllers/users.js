@@ -164,6 +164,7 @@ else{
         zip: value.zip,
         isAdmin: value.isAdmin,
         isBusiness: value.isBusiness,
+        favorites:value.favorites
       });
 
       await newUser.save();
@@ -252,6 +253,19 @@ else{
     } catch (err) {
       console.log(err);
       res.status(400).json({ error: "fail to update data" });
+    }
+  },
+getUserDetails : async function (req, res, next) {
+    try {
+      const _id = req.body().userId; 
+      const result = await User.findById(userId);
+ if (!result) {
+      return res.status(404).json({ error: "User not found" });
+    }
+      res.json(result);
+    } catch (err) {
+      console.log(err);
+      res.status(400).json({ error: "error getting user" });
     }
   },
 };

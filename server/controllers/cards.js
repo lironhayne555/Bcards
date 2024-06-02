@@ -15,28 +15,6 @@ module.exports = {
       res.status(400).json({ error: "error getting cards" });
     }
   },
-  // getItemByUser: async function (req, res, next) {
-  //     try {
-  //         const scheme = joi.object({
-  //             userId: joi.string().required(),
-  //         });
-
-  //         const { error, value } = scheme.validate({ userId: req.params._id });
-
-  //         if (error) {
-  //             console.log(error.details[0].message);
-  //             res.status(400).json({ error: "invalid data" });
-  //             return;
-  //         }
-
-  //         const result = await Card.find({ userId: value.userId });
-  //         res.json(result);
-  //     }
-  //     catch (err) {
-  //         console.log(err);
-  //         res.status(400).json({ error: "error get the cards" });
-  //     }
-  // },
 
   myCards: async function (req, res, next) {
     try {
@@ -83,31 +61,18 @@ module.exports = {
 
   add: async function (req, res, next) {
     try {
+      console.log(req.body);
       const scheme = joi.object({
         title: joi.string().required().min(2).max(256),
         subtitle: joi.string().required().min(2).max(256),
         description: joi.string().required().min(2).max(1024),
-        // phone: joi.string().min(6).max(256).required(),
-        // email: joi.string().min(6).max(256).required().email(),
-        web: joi.string().min(2).max(1024).allow("", null).empty(""),
         imageUrl: joi
           .string()
-          .min(6)
-          .max(1024)
           .allow("", null)
           .empty("")
           .optional(),
-        imageAlt: joi.string().min(6).max(1024).allow("", null).empty(""),
-        // state: joi.string().min(2).max(256).allow('', null).empty(''),
-        // country: joi.string().min(2).max(256).required(),
-        // city: joi.string().min(2).max(256).required(),
-        // street: joi.string().min(2).max(256).required(),
-        // houseNumber: joi.number().min(1).max(1000).required(),
-        // zip: joi.string().min(5).max(50).allow("", null).empty(""),
         userId: joi.string().required(),
       });
-      const imageFile = req.body.imageFile;
-      delete req.body.imageFile;
       const { error, value } = scheme.validate(req.body);
 
       if (error) {
@@ -115,14 +80,6 @@ module.exports = {
         res.status(400).json({ error: "invalid data" });
         return;
       }
-      //       if (req.body.imageUrl.length > 1) {
-      //         let imagefileURL = req.body.imageUrl.replace(
-      //           "http://localhost:3000/",
-      //           "http://localhost:8080/images/"
-      //         );
-      // console.log(imagefileURL);
-      //         value.imageUrl = imagefileURL;
-      //       }
       const newCards = new Card(value);
 
       const result = await newCards.save();
@@ -170,23 +127,11 @@ module.exports = {
         title: joi.string().required().min(2).max(256),
         subtitle: joi.string().required().min(2).max(256),
         description: joi.string().required().min(2).max(1024),
-        phone: joi.string().min(6).max(256).required(),
-        email: joi.string().min(6).max(256).required().email(),
-        web: joi.string().min(2).max(1024).allow("", null).empty(""),
         imageUrl: joi
           .string()
-          .min(6)
-          .max(1024)
           .allow("", null)
           .empty("")
-          .optional(),
-        imageAlt: joi.string().min(6).max(1024).allow("", null).empty(""),
-        state: joi.string().min(2).max(256).allow("", null).empty(""),
-        country: joi.string().min(2).max(256).required(),
-        city: joi.string().min(2).max(256).required(),
-        street: joi.string().min(2).max(256).required(),
-        houseNumber: joi.number().min(1).max(1000).required(),
-        zip: joi.string().min(5).max(50).allow("", null).empty(""),
+          .optional()
       });
       const { error, value } = scheme.validate(req.body);
       if (error) {
@@ -194,16 +139,6 @@ module.exports = {
         res.status(400).json({ error: "invalid data" });
         return;
       }
-      // if (req?.file) {
-      //   let imagefileURL = req.file.path.replace(
-      //     /^public\\images\\/,
-      //     "http://localhost:8080/images/"
-      //   );
-      //   value.imageUrl = imagefileURL;
-      // } else {
-      //   value.imageUrl = "";
-      // }
-
       const card = await Card.findOneAndUpdate(
         {
           _id: req.body._id,

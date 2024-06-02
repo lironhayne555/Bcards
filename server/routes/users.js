@@ -4,6 +4,7 @@ const users = require("../controllers/users");
 const auth = require("../middleware/auth");
 
 router.get("/", users.getUsers);
+router.get("/", users.getUserDetails);
 router.get("/:_id/favs", auth, users.getUserFavoriteCards);
 router.post("/signup", users.signup);
 router.post("/login", users.login);
