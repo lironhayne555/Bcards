@@ -37,18 +37,7 @@ function EditCard() {
   const cancelFunction = () => {
     navigate("/myCards");
   };
-  const handleFileChange = (e: any) => {
-    if (e.target.files.length > 0) {
-      const file = e.target.files[0];
-      // const imageUrl = URL.createObjectURL(file);
-    }
-  };
-  const clearImage = () => {
-    cardForm.imageUrl = "";
-  };
-  // const removeBlob = (imageUrl: string) => {
-  //   return imageUrl.substring(5);
-  // };
+
   const onSubmit = async () => {
     await editCards(cardForm);
     navigate("/myCards");
@@ -58,7 +47,7 @@ function EditCard() {
     setCardForm({ ...cardForm, [element.name]: element.value });
   };
   return (
-    <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+    <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 10 }}>
       <CssBaseline />
       <FormLayout>
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
@@ -114,15 +103,14 @@ function EditCard() {
                         "subtitle length must be maxium 256 characters long",
                     },
                   })}
-                  // required: "subtitle must be require"})}
                   fullWidth
                   InputProps={{ inputProps: { min: 2, max: 256 } }}
                   required
                   id="subtitle"
                   value={cardForm.subtitle || ""}
-                  name="subTitle"
-                  label="SubTitle"
-                  autoComplete="SubTitle"
+                  name="subtitle"
+                  label="subtitle"
+                  autoComplete="subtitle"
                   onChange={(e) => onInput(e.target)}
                   error={Boolean(errors.subtitle)}
                   helperText={errors.subtitle ? errors.subtitle.message : ""}

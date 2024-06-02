@@ -28,7 +28,6 @@ function MyCard() {
   const [isDeleteDialog, setIsDeleteDialog] = useState("");
   const [favorites, setLocalFavorites] = useState(user?.favorites);
   const [loading, setLoading] = useState(true);
-  const cardsRef = useRef(myCards);
   const forceUpdate = useForceUpdate();
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -59,7 +58,6 @@ function MyCard() {
         const cardsWithDetails = attachUserDetails(cards, user);
         setFilteredCards(cardsWithDetails);
         setMyCards(cardsWithDetails);
-        //cardsRef.current = cardsWithDetails;
       }
     } catch (error) {
       console.error("Error fetching cards:", error);
@@ -93,21 +91,17 @@ function MyCard() {
     setSearchValue("");
   }, [myCards]);
   useEffect(() => {
-    // fetchCards();
-
     if (searchValue.trim() !== "") {
       const filtered = myCards.filter(
         (item) =>
           item.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
           item.description?.toLowerCase().includes(searchValue.toLowerCase())
       );
-      //cardsRef.current = filtered;
       setFilteredCards(filtered);
     } else {
       setFilteredCards(myCards);
     }
   }, [searchValue]);
-  let length = myCards.length === 0;
   function handleClick() {
     navigate("/addCard");
   }
@@ -116,6 +110,7 @@ function MyCard() {
     if (user) {
       setUser({ ...user, favorites });
       setLocalStorgaeUser({ ...user, favorites });
+      // fetchCards();
     }
   }, [favorites]);
 
@@ -123,8 +118,13 @@ function MyCard() {
     if (!cardId || !user?._id || !user.favorites) return;
     updateLocalFav(cardId);
 
-    await setFavorites(cardId, user._id);
-    //forceUpdate();
+    await setFavorites(cardId, user._id)
+      .then((res) => {
+        toast.success("Favorite list Update");
+      })
+      .catch((err) => {
+        toast.error("Erorr upadta list favorites");
+      });
   };
 
   const updateLocalFav = (cardId?: string) => {
@@ -154,10 +154,9 @@ function MyCard() {
     try {
       if (isDeleteDialog) {
         await deleteCard(isDeleteDialog);
-        const updated = cardsRef.current.filter(
+        const updated = myCards.filter(
           (card: Card) => card._id !== isDeleteDialog
         );
-        cardsRef.current = updated;
         setMyCards(updated);
         setIsDeleteDialog("");
         forceUpdate();
@@ -169,6 +168,9 @@ function MyCard() {
       toast.error("Failed to delete card.");
     }
   };
+  function sendWhatsApp(number: any) {
+    window.open(`https://wa.me/972${number}`, "_blank");
+  }
   return (
     <>
       <ConfirmDialog
@@ -204,7 +206,6 @@ function MyCard() {
                     handleDelete={() => onDelete(cardItem._id)}
                     handleUpdate={() => onUpdate(cardItem._id)}
                   />
-                  {/* )} */}
                 </div>
               </Grid>
             ))}

@@ -21,10 +21,8 @@ function Cards() {
   const navigate = useNavigate();
   const [cards, setCards] = useState<Array<FullCard>>([]);
   const [favorites, setLocalFavorites] = useState(user?.favorites);
-  const { searchValue } = useContext(SearchContext);
-  const [loading, setLoading] = useState(true);
-  const cardsRef = useRef(cards);
-  const forceUpdate = useForceUpdate();
+  const [filteredCards, setFilteredCards] = useState<Array<FullCard>>([]);
+  const { searchValue, setSearchValue } = useContext(SearchContext);
   const fetchCards = async () => {
     try {
       if (user && !cards.length) {
@@ -62,19 +60,24 @@ function Cards() {
           })
         );
         console.log(cardsWithUserDetails);
-
+        setFilteredCards(cardsWithUserDetails);
         setCards(cardsWithUserDetails);
       }
     } catch (error) {
       console.log(error);
     }
   };
-
   useEffect(() => {
     if (!cards.length) {
       fetchCards();
     }
+  }, [user]);
+  useEffect(() => {
+    fetchCards();
+    setFilteredCards(cards);
+    setSearchValue("");
   }, [cards]);
+
   useEffect(() => {
     if (searchValue.trim() !== "") {
       const filtered = cards.filter(
@@ -82,11 +85,11 @@ function Cards() {
           item.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
           item.description?.toLowerCase().includes(searchValue.toLowerCase())
       );
-      setCards(filtered);
+      setFilteredCards(filtered);
     } else {
-      fetchCards();
+      setFilteredCards(cards);
     }
-  }, [searchValue, cards]);
+  }, [searchValue]);
 
   useEffect(() => {
     if (user) {
@@ -100,7 +103,6 @@ function Cards() {
     updateLocalFav(cardId);
 
     await setFavorites(cardId, user._id);
-    //forceUpdate();
   };
 
   const updateLocalFav = (cardId?: string) => {
@@ -118,13 +120,11 @@ function Cards() {
       const updatedFavorites = [...favorites, cardId];
 
       setLocalFavorites([...updatedFavorites]);
-      //setFavsCards(updatedFavorites);
     }
   };
 
   const isCardFav = (cardId?: string) => {
     if (!cardId || !favorites) return false;
-    console.log(favorites.includes(cardId));
 
     return favorites.includes(cardId);
   };
@@ -142,11 +142,11 @@ function Cards() {
           mainText="Cards"
           subText="Here you can find business cards from all categories"
         ></Title>
-        {cards.length === 0 ? (
+        {filteredCards.length === 0 ? (
           <span className="text-center">You don't have cards yet</span>
         ) : (
           <Grid justifyContent={"center"} container gridTemplateColumns={3}>
-            {cards.map((cardItem) => (
+            {filteredCards.map((cardItem) => (
               <Grid item key={cardItem._id}>
                 <div className="card-wrapper" key={cardItem._id}>
                   <RecipeReviewCard

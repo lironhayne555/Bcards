@@ -29,9 +29,6 @@ function AddCard() {
   const cancelFunction = () => {
     navigate("/myCards");
   };
-  const clearImage = () => {
-    cardForm.imageUrl = "";
-  };
 
   useEffect(() => {
     if (user?._id) setCardForm({ ...cardForm, userId: user?._id });
@@ -41,18 +38,10 @@ function AddCard() {
       const file = e.target.files[0];
       const imageUrl = URL.createObjectURL(file);
 
-      // setImageFile(file);
-
       setCardForm({
         ...cardForm,
-        imageUrl: removeBlob(imageUrl),
+        imageUrl: imageUrl,
       });
-
-      // setImageUrl(imageUrl);
-    } else {
-      // Clear imageUrl if no file is selected
-      // setImageFile(null);
-      // setImageUrl("");
     }
   };
   const removeBlob = (imageUrl: string) => {
@@ -63,7 +52,6 @@ function AddCard() {
       cardForm.userId = user?._id;
     }
     if (!isImageValid) cardForm.imageUrl = defaultImageUrl;
-    console.log(cardForm);
 
     await addCards(cardForm);
     navigate("/myCards");
@@ -156,8 +144,8 @@ function AddCard() {
                   InputProps={{ inputProps: { min: 2, max: 256 } }}
                   fullWidth
                   required
-                  id="subTitle"
-                  label="subTitle"
+                  id="subtitle"
+                  label="subtitle"
                   name="subtitle"
                   autoComplete="SubTitle"
                   onChange={(e) => onInput(e.target)}
@@ -207,17 +195,10 @@ function AddCard() {
               </Grid>
               <Grid item xs={12}>
                 {cardForm.imageUrl && isImageValid ? (
-                  <img
-                    //   onError={handleErrorImage}
-                    src={cardForm.imageUrl}
-                    style={{ maxWidth: "100%" }}
-                  />
+                  <img src={cardForm.imageUrl} style={{ maxWidth: "100%" }} />
                 ) : (
                   ""
                 )}
-              </Grid>
-              <Grid item xs={12}>
-                <Button onClick={clearImage}>Clear Image</Button>
               </Grid>
               <Grid item xs={12}>
                 <Button

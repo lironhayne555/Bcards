@@ -1,0 +1,20 @@
+.tableContainer {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tableHead {
+  background-color: #f5f5f5;
+}
+
+.tableCell {
+  font-weight: bold;
+}
+
+.avatarCell {
+  display: flex;
+  align-items: center;
+}
+
+.iconCell {
+  text-align: center;
+}

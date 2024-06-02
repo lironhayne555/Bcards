@@ -24,7 +24,6 @@ export async function addCards(cardForm: Card): Promise<Card> {
 }
 
 export async function editCards(cardForm: Card): Promise<Card> {
-  console.log(cardForm);
 
   const res = await fetch(`${cardsUrl}`, {
     method: "PATCH",

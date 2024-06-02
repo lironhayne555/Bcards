@@ -25,7 +25,6 @@ export interface User {
   password?: string;
   imageUrl?: string;
   imageAlt?: string;
-  state?: string;
   country?: string;
   city?: string;
   street?: string;
@@ -257,28 +256,6 @@ export default function SignUp() {
                 onChange={(e) => onInput(e.target)}
                 error={Boolean(errors.imageAlt)}
                 helperText={errors.imageAlt?.message}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                {...register("state", {
-                  minLength: {
-                    value: 2,
-                    message: "state length must be at least 2 characters long",
-                  },
-                  maxLength: {
-                    value: 256,
-                    message: "state length must be maxium 256 long",
-                  },
-                })}
-                id="state"
-                label="State"
-                name="state"
-                autoComplete="state"
-                onChange={(e) => onInput(e.target)}
-                error={Boolean(errors.state)}
-                helperText={errors.state?.message}
               />
             </Grid>
             <Grid item xs={6}>

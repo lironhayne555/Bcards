@@ -17,13 +17,10 @@ import { error } from "console";
 import { setUser as setLocalStorgaeUser } from "../../auth/TokenManager";
 function FavCards() {
   const { user, setUser } = useAuth();
-  const navigate = useNavigate();
-  const { searchValue } = useContext(SearchContext);
+  const { searchValue, setSearchValue } = useContext(SearchContext);
+  const [filteredCards, setFilteredCards] = useState<Array<FullCard>>([]);
   const [favsCards, setFavsCards] = useState<Array<FullCard>>([]);
   const [favorites, setLocalFavorites] = useState(user?.favorites);
-  const [loading, setLoading] = useState(true);
-  const cardsRef = useRef(favsCards);
-  const forceUpdate = useForceUpdate();
   const fetchCards = async () => {
     try {
       if (user && !favsCards.length) {
@@ -60,8 +57,7 @@ function FavCards() {
             }
           })
         );
-        console.log(cardsWithUserDetails);
-
+        setFilteredCards(cardsWithUserDetails);
         setFavsCards(cardsWithUserDetails);
       }
     } catch (error) {
@@ -71,20 +67,21 @@ function FavCards() {
 
   useEffect(() => {
     fetchCards();
+    setFilteredCards(favsCards);
+    setSearchValue("");
   }, [FavCards]);
   useEffect(() => {
     if (searchValue.trim() !== "") {
-      {
-        const filtered = favsCards.filter(
-          (item) =>
-            item.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
-            item.description?.toLowerCase().includes(searchValue.toLowerCase())
-        );
-        //cardsRef.current = filtered;
-        setFavsCards(filtered);
-      }
+      const filtered = favsCards.filter(
+        (item) =>
+          item.title?.toLowerCase().includes(searchValue.toLowerCase()) ||
+          item.description?.toLowerCase().includes(searchValue.toLowerCase())
+      );
+      setFilteredCards(filtered);
+    } else {
+      setFilteredCards(favsCards);
     }
-  }, [searchValue, favsCards]);
+  }, [searchValue]);
   useEffect(() => {
     if (user) {
       setUser({ ...user, favorites });
@@ -97,7 +94,6 @@ function FavCards() {
     updateLocalFav(cardId);
 
     await setFavorites(cardId, user._id);
-    //forceUpdate();
   };
 
   const updateLocalFav = (cardId?: string) => {
@@ -112,13 +108,12 @@ function FavCards() {
       setLocalStorgaeUser(user);
       setUser(user);
       setFavsCards([...updatedFavorites]);
+      setFilteredCards([...updatedFavorites]);
     }
   };
 
   const isCardFav = (cardId?: string) => {
     if (!cardId || !favorites) return false;
-    console.log(favorites.includes(cardId));
-
     return favorites.includes(cardId);
   };
   const handleDelete = () => {
@@ -136,11 +131,11 @@ function FavCards() {
           mainText="Cards"
           subText="Here you can find business cards from all categories"
         ></Title>
-        {favsCards.length === 0 ? (
+        {filteredCards.length === 0 ? (
           <span className="text-center">You don't have cards yet</span>
         ) : (
           <Grid justifyContent={"center"} container gridTemplateColumns={3}>
-            {favsCards.map((cardItem) => (
+            {filteredCards.map((cardItem) => (
               <Grid item key={cardItem._id}>
                 <div className="card-wrapper" key={cardItem._id}>
                   <RecipeReviewCard

@@ -43,8 +43,6 @@ export default function SignIn() {
     navigate("/cards");
   };
   const onSubmit = async () => {
-    console.log(userForm);
-
     await signin(userForm).then((user: User) => {
       setUser(user);
       tokenManager.setUser(user);

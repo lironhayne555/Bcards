@@ -72,9 +72,6 @@ export const RecipeReviewCard = ({
     }
     return false;
   }
-  function onClickPhone(_id: string) {
-    console.log("go to whatsapp");
-  }
 
   function onMoreDetails(_id: string) {
     getCardById(_id).then((json) => {
@@ -160,11 +157,11 @@ export const RecipeReviewCard = ({
             spacing={0}
             style={{
               display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <Grid item xs={1.5}>
+            <Grid item xs={4}>
               {showButtonDelete() && (
                 <IconButton
                   onClick={() => handleDelete(card._id ? card._id : "")}
@@ -174,7 +171,7 @@ export const RecipeReviewCard = ({
                 </IconButton>
               )}
             </Grid>
-            <Grid item xs={1.5}>
+            <Grid item xs={4}>
               {showButtonUpdate() && (
                 <IconButton
                   aria-label="update"
@@ -184,18 +181,8 @@ export const RecipeReviewCard = ({
                 </IconButton>
               )}
             </Grid>
-            <Grid item xs={5}></Grid>
-            <Grid item xs={1.5}>
-              {showButtonPhone() && (
-                <IconButton
-                  onClick={() => onClickPhone(card._id ? card._id : "")}
-                  aria-label="contact us"
-                >
-                  <PhoneIcon></PhoneIcon>
-                </IconButton>
-              )}
-            </Grid>
-            <Grid item xs={1.5}>
+            {/* <Grid item xs={4}></Grid> */}
+            <Grid item xs={4}>
               {showButtonFavorit() && (
                 <IconButton
                   aria-label="add to favorites"

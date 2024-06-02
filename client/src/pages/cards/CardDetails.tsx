@@ -15,10 +15,11 @@ import {
 import { Image, Phone } from "@mui/icons-material";
 import { getCardById } from "../../services/CardServices";
 import { FullCard } from "../../components/RecipeReviewCard";
+import { getUserDetails } from "../../services/ApiServices";
 //import "../../css/CardDetails.css";
 function CardDetails() {
   const { _id } = useParams();
-  const [cardForm, setCardForm] = useState({} as FullCard);
+  const [cardForm, setCardForm] = useState<FullCard | null>(null);
   const { user } = useAuth();
   const [userId, setUserId] = useState(user?._id);
   const defaultImageUrl = "http://localhost:8080/images/default_image.jpg";
@@ -28,24 +29,67 @@ function CardDetails() {
   };
   useEffect(() => {
     if (!_id) return;
-    getCardById(_id).then((json) => {
-      if (user?._id) {
-        delete json.__v;
-
-        setCardForm({ ...json, userId: user?._id });
+    const fetchCardDetails = async () => {
+      try {
+        const json = await getCardById(_id);
+        if (user?._id) {
+          delete json.__v;
+          let cardsWithUserDetails: FullCard;
+          if (user._id === json.userId) {
+            cardsWithUserDetails = {
+              ...json,
+              user: {
+                email: user.email,
+                phone: user.phone,
+                country: user.country,
+                city: user.city,
+                street: user.street,
+                houseNumber: user.houseNumber,
+                zip: user.zip,
+              },
+            };
+          } else {
+            const userCard = await getUserDetails(json.userId);
+            cardsWithUserDetails = {
+              ...json,
+              user: {
+                email: userCard.email,
+                phone: userCard.phone,
+                country: userCard.country,
+                city: userCard.city,
+                street: userCard.street,
+                houseNumber: userCard.houseNumber,
+                zip: userCard.zip,
+              },
+            };
+          }
+          setCardForm(cardsWithUserDetails);
+        }
+      } catch (error) {
+        console.error("Error fetching card details:", error);
       }
-    });
-  }, [user]);
+    };
+    fetchCardDetails();
+  }, [_id, user]);
+  if (!cardForm) {
+    return <div>Loading...</div>; // or some loading spinner
+  }
 
   return (
-    <Container component="main" maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+    <Container component="main" maxWidth="xs" sx={{ mt: 10, mb: 10 }}>
       <CssBaseline />
-      <Card className="cardContainer" sx={{ maxWidth: 300 }}>
+      <Card
+        sx={{
+          width: "100%",
+          maxWidth: 400,
+          margin: "0 auto",
+        }}
+      >
         {cardForm.imageUrl ? (
           <CardMedia
             className="cardMedia"
             component="img"
-            height="150"
+            height="300"
             src={cardForm.imageUrl}
           />
         ) : (
@@ -99,8 +143,8 @@ function CardDetails() {
             direction="row"
             style={{
               display: "flex",
-              justifyContent: "flex-start",
-              alignItems: "flex-start",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <Grid
@@ -110,8 +154,8 @@ function CardDetails() {
               spacing={0}
               style={{
                 display: "flex",
-                justifyContent: "flex-start",
-                alignItems: "flex-start",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <Grid>
